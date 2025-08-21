@@ -4,6 +4,6 @@ return [
         vpsCredId    : '',
         vpsUser      : '',
         vpsHost      : '',
-        webrootBase: ''
+        webrootBase  : ''
     ],
 ]

@@ -1,6 +1,6 @@
 // vps.groovy
 return [
-    vps1: [
+    xenon_vps: [
         vpsCredId    : 'xenon_vps',
         vpsUser      : 'ubuntu',
         vpsHost      : '165.154.235.179',

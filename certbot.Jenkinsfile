@@ -62,7 +62,7 @@ pipeline {
                             def existingCerts = sh(
                                 script: """
                                     ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
-                                    "sudo ls -1 /etc/letsencrypt/live"
+                                    'sudo ls -1 /etc/letsencrypt/live 2>/dev/null || echo "No certs found"'
                                 """,
                                 returnStdout: true
                             ).trim().split("\\r?\\n") as List

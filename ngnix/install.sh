@@ -11,5 +11,12 @@ sudo systemctl start nginx
 # Install Certbot and the Nginx plugin
 sudo apt install -y certbot python3-certbot-nginx
 
+
+# install recomend options
+sudo mkdir -p /etc/letsencrypt
+sudo wget https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf -O /etc/letsencrypt/options-ssl-nginx.conf
+sudo wget https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem -O /etc/letsencrypt/ssl-dhparams.pem
+
+
 # (Optional) check status
 sudo systemctl status nginx

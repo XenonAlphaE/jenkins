@@ -178,8 +178,8 @@ pipeline {
                                          sudo systemctl reload nginx && \\
                                          sudo certbot certonly --webroot -w ${vpsInfo.webrootBase}/${site.name} \\
                                          -d ${domain} -d www.${domain} \\
-                                            --email contact@${domain} \\
                                             --agree-tos \\
+                                            --email contact@${domain} \\
                                             --non-interactive"
                                     """
                                 }

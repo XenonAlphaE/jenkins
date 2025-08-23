@@ -10,7 +10,7 @@ return [
 
         envs: [
             [ 
-                MAIN_DOMAIN:'https://pepenodetoken.com/',
+                MAIN_DOMAIN:'https://pepe-node.com/',
                 BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
                 LOGO_PATH:'/img/pepenode/token.svg',
                 MAIN_GTAG:'G-DT4375LBL3',

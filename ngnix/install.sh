@@ -11,6 +11,5 @@ sudo systemctl start nginx
 # Install Certbot and the Nginx plugin
 sudo apt install -y certbot python3-certbot-nginx
 
-sudo certbot --nginx
 # (Optional) check status
 sudo systemctl status nginx

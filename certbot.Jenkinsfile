@@ -176,8 +176,8 @@ pipeline {
                                          sudo chown -R www-data:www-data ${vpsInfo.webrootBase}/${site.name} && \\
                                          sudo nginx -t && \\
                                          sudo systemctl reload nginx && \\
-                                         sudo certbot --nginx --webroot -w ${vpsInfo.webrootBase}/${site.name} \\
-                                         -d ${domain} -d www.${domain} \\
+                                         sudo certbot --nginx \\
+                                            -d ${domain} -d www.${domain} \\
                                             --agree-tos \\
                                             --email contact@${domain} \\
                                             --non-interactive"

@@ -19,6 +19,15 @@ return [
                 MAIN_TWITTER:'@btchyper',
                 OG_PATH:'/img/btchyper/OG.jpeg'
             ],
+            [ 
+                MAIN_DOMAIN:'https://btchype.io/',
+                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                LOGO_PATH:'/img/btchyper/token.svg',
+                MAIN_GTAG:'G-EV4VMQB5HZ',
+                MAIN_SITENAME:'btchyper',
+                MAIN_TWITTER:'@btchyper',
+                OG_PATH:'/img/btchyper/OG.jpeg'
+            ],
            
         ]
 

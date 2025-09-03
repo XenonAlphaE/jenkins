@@ -10,6 +10,8 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://btcsymbol.net/',
+                MAIN_SITENAME:'btcsymbol',
+
             ],
             
         ]

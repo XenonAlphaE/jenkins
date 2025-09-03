@@ -23,64 +23,64 @@ pipeline {
             }
         }
 
-        // stage('Cleanup Redundant Certificates') {
-        //     steps {
-        //         script {
-        //             // Build expected domains per VPS
-        //             def expectedDomainsPerVps = [:]
+        stage('Cleanup Redundant Certificates') {
+            steps {
+                script {
+                    // Build expected domains per VPS
+                    def expectedDomainsPerVps = [:]
 
-        //             repos.each { repo ->
-        //                 def vpsInfo = vpsInfos[repo.vpsRef]
-        //                 def domain = site.domain
-        //                     .replaceAll('https://','')
-        //                     .replaceAll('http://','')
-        //                     .replaceAll('/','')
-        //                     .replaceAll('^www\\.', '') // normalize
+                    repos.each { repo ->
+                        def vpsInfo = vpsInfos[repo.vpsRef]
+                        def domain = repo.domain
+                            .replaceAll('https://','')
+                            .replaceAll('http://','')
+                            .replaceAll('/','')
+                            .replaceAll('^www\\.', '') // normalize
 
-        //                     if (!expectedDomainsPerVps.containsKey(repo.vpsRef)) {
-        //                         expectedDomainsPerVps[repo.vpsRef] = []
-        //                     }
+                            if (!expectedDomainsPerVps.containsKey(repo.vpsRef)) {
+                                expectedDomainsPerVps[repo.vpsRef] = []
+                            }
 
 
-        //                 expectedDomainsPerVps[repo.vpsRef] << domain
-        //                 echo "📌 Collected domain for VPS ${repo.vpsRef}: ${domain} + www.${domain}"
+                        expectedDomainsPerVps[repo.vpsRef] << domain
+                        echo "📌 Collected domain for VPS ${repo.vpsRef}: ${domain} + www.${domain}"
                         
-        //             }
+                    }
 
-        //             // After collection, dump the whole map
-        //             expectedDomainsPerVps.each { vpsKey, domains ->
-        //                 echo "✅ VPS ${vpsKey} should have certs for: ${domains}"
-        //             }
+                    // After collection, dump the whole map
+                    expectedDomainsPerVps.each { vpsKey, domains ->
+                        echo "✅ VPS ${vpsKey} should have certs for: ${domains}"
+                    }
 
-        //             // Loop VPSes and clean up
-        //             expectedDomainsPerVps.each { vpsKey, domains ->
-        //                 def vpsInfo = vpsInfos[vpsKey]
+                    // Loop VPSes and clean up
+                    expectedDomainsPerVps.each { vpsKey, domains ->
+                        def vpsInfo = vpsInfos[vpsKey]
 
-        //                 sshagent (credentials: [vpsInfo.vpsCredId]) {
-        //                     // list all certs in /etc/letsencrypt/live
-        //                     def existingCerts = sh(
-        //                         script: """
-        //                             ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
-        //                             'sudo ls -1 /etc/letsencrypt/live 2>/dev/null || echo "No certs found"'
-        //                         """,
-        //                         returnStdout: true
-        //                     ).trim().split("\\r?\\n") as List
+                        sshagent (credentials: [vpsInfo.vpsCredId]) {
+                            // list all certs in /etc/letsencrypt/live
+                            def existingCerts = sh(
+                                script: """
+                                    ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
+                                    'sudo ls -1 /etc/letsencrypt/live 2>/dev/null || echo "No certs found"'
+                                """,
+                                returnStdout: true
+                            ).trim().split("\\r?\\n") as List
 
-        //                     echo "📜 VPS ${vpsInfo.vpsHost} has certs: ${existingCerts}"
-        //                     echo "✅ Expected for repos: ${domains}"
+                            echo "📜 VPS ${vpsInfo.vpsHost} has certs: ${existingCerts}"
+                            echo "✅ Expected for repos: ${domains}"
 
-        //                     def redundant = existingCerts.findAll { !domains.contains(it) }
-        //                     if (redundant) {
-        //                         echo "🗑️ Removing redundant certs on ${vpsInfo.vpsHost}: ${redundant}"
+                            def redundant = existingCerts.findAll { !domains.contains(it) }
+                            if (redundant) {
+                                echo "🗑️ Removing redundant certs on ${vpsInfo.vpsHost}: ${redundant}"
 
-        //                     } else {
-        //                         echo "✨ No redundant certs to remove on ${vpsInfo.vpsHost}"
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                            } else {
+                                echo "✨ No redundant certs to remove on ${vpsInfo.vpsHost}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
 
@@ -91,7 +91,7 @@ pipeline {
 
                     repos.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
-                        def domain = site.domain
+                        def domain = repo.domain
                             .replaceAll('https://','')
                             .replaceAll('http://','')
                             .replaceAll('/','')
@@ -141,16 +141,16 @@ pipeline {
                                     return
                                 }
 
-                                def tmpConfigFile = "${site.name}.conf"
+                                def tmpConfigFile = "${repo.name}.conf"
 
                                 // Replace placeholders in nginx template
                                 def nginxConfig = certbotTemplate
                                     .replace('{{DOMAIN}}', domain)
-                                    .replace('{{ENV_NAME}}', site.name)
+                                    .replace('{{ENV_NAME}}', repo.name)
                                     .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
 
                                 writeFile(file: tmpConfigFile, text: nginxConfig)
-                                echo "✅ Generated Nginx config for ${site.name}: ${tmpConfigFile}"
+                                echo "✅ Generated Nginx config for ${repo.name}: ${tmpConfigFile}"
 
                                 sh """
                                     # Upload config
@@ -171,11 +171,11 @@ pipeline {
                                 // Ensure webroot folder and issue new cert
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \\
-                                    "sudo mkdir -p ${vpsInfo.webrootBase}/${site.name}/.well-known/acme-challenge && \\
-                                        sudo chown -R www-data:www-data ${vpsInfo.webrootBase}/${site.name} && \\
+                                    "sudo mkdir -p ${vpsInfo.webrootBase}/${repo.name}/.well-known/acme-challenge && \\
+                                        sudo chown -R www-data:www-data ${vpsInfo.webrootBase}/${repo.} && \\
                                         sudo nginx -t && \\
                                         sudo systemctl reload nginx && \\
-                                        sudo certbot certonly --webroot -w ${vpsInfo.webrootBase}/${site.name} \\
+                                        sudo certbot certonly --webroot -w ${vpsInfo.webrootBase}/${repo.} \\
                                         -d ${domain} -d www.${domain} \\
                                         --agree-tos \\
                                         --email contact@${domain} \\

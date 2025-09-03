@@ -9,7 +9,9 @@ def repoDomains = repos.collectMany { repo ->
     repo.envs.collect { env ->
         [
             domain : env.MAIN_DOMAIN,
-            vpsRef : repo.vpsRef
+            vpsRef : repo.vpsRef,
+            name: env.MAIN_SITENAME
+
         ]
     }
 }

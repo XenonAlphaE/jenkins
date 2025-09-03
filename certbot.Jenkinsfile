@@ -172,10 +172,10 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \\
                                     "sudo mkdir -p ${vpsInfo.webrootBase}/${repo.name}/.well-known/acme-challenge && \\
-                                        sudo chown -R www-data:www-data ${vpsInfo.webrootBase}/${repo.} && \\
+                                        sudo chown -R www-data:www-data ${vpsInfo.webrootBase}/${repo.name} && \\
                                         sudo nginx -t && \\
                                         sudo systemctl reload nginx && \\
-                                        sudo certbot certonly --webroot -w ${vpsInfo.webrootBase}/${repo.} \\
+                                        sudo certbot certonly --webroot -w ${vpsInfo.webrootBase}/${repo.name} \\
                                         -d ${domain} -d www.${domain} \\
                                         --agree-tos \\
                                         --email contact@${domain} \\

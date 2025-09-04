@@ -15,7 +15,7 @@ def repoDomains = repos.collectMany { repo ->
                 .replaceAll(/_+/, '_')            // collapse consecutive underscores
                 .toLowerCase()                    // optional: normalize case
 
-            MAIN_DOMAIN : env.MAIN_DOMAIN,
+            domain : env.MAIN_DOMAIN,
             vpsRef : repo.vpsRef,
             name: formatedDomain
 

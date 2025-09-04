@@ -31,7 +31,7 @@ pipeline {
 
                     repos.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
-                        def domain = repo.MAIN_DOMAIN
+                        def domain = repo.domain
                             .replaceAll('https://','')
                             .replaceAll('http://','')
                             .replaceAll('/','')
@@ -91,7 +91,7 @@ pipeline {
 
                     repos.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
-                        def domain = repo.MAIN_DOMAIN
+                        def domain = repo.domain
                             .replaceAll('https://','')
                             .replaceAll('http://','')
                             .replaceAll('/','')

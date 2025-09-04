@@ -8,9 +8,16 @@ repos += load "${env.WORKSPACE}/gitRepos/priceSignature.groovy"
 def repoDomains = repos.collectMany { repo ->
     repo.envs.collect { env ->
         [
-            domain : env.MAIN_DOMAIN,
+            def formatedDomain = env.MAIN_DOMAIN
+                .replaceAll(/^https?:\/\//, '')   // remove protocol
+                .replaceAll(/\/$/, '')            // remove trailing slash
+                .replaceAll(/[^a-zA-Z0-9]/, '_')  // replace special chars with underscore
+                .replaceAll(/_+/, '_')            // collapse consecutive underscores
+                .toLowerCase()                    // optional: normalize case
+
+            MAIN_DOMAIN : env.MAIN_DOMAIN,
             vpsRef : repo.vpsRef,
-            name: env.MAIN_SITENAME
+            name: formatedDomain
 
         ]
     }

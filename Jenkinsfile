@@ -1,7 +1,5 @@
 import groovy.transform.Field
 
-@Field def state
-
 // --- Helper functions ---
 def extractDomain(String url) {
     return url
@@ -119,6 +117,16 @@ pipeline {
 
 
     stages {
+        stage('Init') {
+            steps {
+                script {
+                    state = redisState()   // 🚀 create namespace per job+build
+                    state.clearAll()       // 🔥 start with a clean slate
+                }
+            }
+        }
+
+
         stage('Load Script') {
             steps {
                 script {
@@ -130,7 +138,7 @@ pipeline {
 
                     buildUtils  = load 'lib/buildUtils.groovy'
 
-                    state = pipelineState()   // from vars/pipelineState.groovy
+                    // state = pipelineState()   // from vars/pipelineState.groovy
                     // deployUtils = load 'lib/deployUtils.groovy'
                     // nginxUtils  = load 'lib/nginxUtils.groovy'   
 

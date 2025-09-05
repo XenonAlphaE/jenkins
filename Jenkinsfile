@@ -17,65 +17,65 @@ def runWithMaxParallel(tasks, maxParallel = 3) {
     }
 }
 
-def generateNginxConfigs() {
-    repos.each { repo ->
-        if (!params.FORCE_BUILD_ALL && !state().hasChangedRepo(repo.folder)) {
-            echo "⏭️ Skipping nginx config for ${repo.folder}, no changes detected"
-            return
-        }
+// def generateNginxConfigs() {
+//     repos.each { repo ->
+//         if (!params.FORCE_BUILD_ALL && !state().hasChangedRepo(repo.folder)) {
+//             echo "⏭️ Skipping nginx config for ${repo.folder}, no changes detected"
+//             return
+//         }
 
-        def vpsInfo = vpsInfos[repo.vpsRef]
-        dir(repo.folder) {
-            repo.envs.each { envConf ->
-                def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
+//         def vpsInfo = vpsInfos[repo.vpsRef]
+//         dir(repo.folder) {
+//             repo.envs.each { envConf ->
+//                 def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
-                if (state().hasMissingCert(domain)) {
-                    echo "⏭️ Skipping nginx config for ${envConf.name} (${domain}) due to missing cert"
-                    return
-                }
+//                 if (state().hasMissingCert(domain)) {
+//                     echo "⏭️ Skipping nginx config for ${envConf.name} (${domain}) due to missing cert"
+//                     return
+//                 }
 
-                def tmpConfigFile = "${envConf.name}.conf"
-                def nginxConfig = ngnixTemplate
-                    .replace('{{DOMAIN}}', domain)
-                    .replace('{{ENV_NAME}}', envConf.name)
-                    .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
+//                 def tmpConfigFile = "${envConf.name}.conf"
+//                 def nginxConfig = ngnixTemplate
+//                     .replace('{{DOMAIN}}', domain)
+//                     .replace('{{ENV_NAME}}', envConf.name)
+//                     .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
 
-                writeFile(file: tmpConfigFile, text: nginxConfig)
-                echo "✅ Generated Nginx config for ${envConf.name} locally: ${tmpConfigFile}"
-                echo "📄 Local nginx config content for ${envConf.name}:\n${nginxConfig}"
+//                 writeFile(file: tmpConfigFile, text: nginxConfig)
+//                 echo "✅ Generated Nginx config for ${envConf.name} locally: ${tmpConfigFile}"
+//                 echo "📄 Local nginx config content for ${envConf.name}:\n${nginxConfig}"
 
-                sshagent(credentials: [vpsInfo.vpsCredId]) {
-                    sh """
-                        # Copy config to VPS
-                        scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
+//                 sshagent(credentials: [vpsInfo.vpsCredId]) {
+//                     sh """
+//                         # Copy config to VPS
+//                         scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
 
-                        # SSH into VPS and deploy
-                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
+//                         # SSH into VPS and deploy
+//                         ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
 
-                            # 👉 Remove all conflicting enabled sites for this domain
-                            for f in /etc/nginx/sites-enabled/*; do
-                                if grep -qE \\"server_name .*(${domain}).*;\\" \"\$f\"; then
-                                    echo 'Removing conflicting site: \$f'
-                                fi
-                            done
+//                             # 👉 Remove all conflicting enabled sites for this domain
+//                             for f in /etc/nginx/sites-enabled/*; do
+//                                 if grep -qE \\"server_name .*(${domain}).*;\\" \"\$f\"; then
+//                                     echo 'Removing conflicting site: \$f'
+//                                 fi
+//                             done
 
-                            sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
-                            sudo chown root:root /etc/nginx/sites-available/${tmpConfigFile} &&
+//                             sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
+//                             sudo chown root:root /etc/nginx/sites-available/${tmpConfigFile} &&
 
 
-                            # 👉 activate only this site
-                            sudo ln -sf /etc/nginx/sites-available/${tmpConfigFile} /etc/nginx/sites-enabled/${tmpConfigFile} 
-                        "
+//                             # 👉 activate only this site
+//                             sudo ln -sf /etc/nginx/sites-available/${tmpConfigFile} /etc/nginx/sites-enabled/${tmpConfigFile} 
+//                         "
 
-                        # Optional: view deployed config
-                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "cat /etc/nginx/sites-available/${tmpConfigFile}"
-                    """
-                }
+//                         # Optional: view deployed config
+//                         ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "cat /etc/nginx/sites-available/${tmpConfigFile}"
+//                     """
+//                 }
 
-            }
-        }
-    }
-}
+//             }
+//         }
+//     }
+// }
 
 
 pipeline {
@@ -130,7 +130,7 @@ pipeline {
                 script {
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
-                    ngnixTemplate = readFile('ngnix/https.template.conf')
+                    // ngnixTemplate = readFile('ngnix/https.template.conf')
 
                     // buildUtils  = load 'lib/buildUtils.groovy'
 
@@ -481,12 +481,21 @@ pipeline {
         stage('Generate NGNIX config and deploy SSH') {
             steps {
                 script {
+                    def changedRepos = redisState.getChangedRepos()
                     if (!params.FORCE_BUILD_ALL && !changedRepos) {
                         echo "⏭️ Skipping nginx reload, no changes detected"
                         return
                     }
 
-                    generateNginxConfigs()
+                    repos.each { repo ->
+                        dir(repo.folder) {
+                            repo.envs.each { envConf ->
+                                nginxUtils.generate(repo, envConf, vpsInfos )
+                            }
+                        }
+                    }
+
+                    // generateNginxConfigs()
 
 
                     vpsInfos.values().each { vpsConf -> 

@@ -1,3 +1,8 @@
+// Default expiry in seconds (e.g. 1 day = 86400)
+def defaultTtl() {
+    return (env.REDIS_TTL ?: "86400") as Integer
+}
+
 def redisCmd(String cmd) {
     def host = env.REDIS_HOST ?: "redis"
     def port = env.REDIS_PORT ?: "6379"
@@ -16,9 +21,15 @@ def keyPrefix() {
     return "jenkins:${job}:${build}"
 }
 
-def listPush(String key, String value) {
+def listPush(String key, String value, Integer ttl = defaultTtl()) {
     def fullKey = "${keyPrefix()}:${key}"
-    return redisCmd("lpush ${fullKey} '${value}'")
+    // Push value
+    redisCmd("lpush ${fullKey} '${value}'")
+    // Set expiry if > 0
+    if (ttl > 0) {
+        redisCmd("expire ${fullKey} ${ttl}")
+    }
+    return true
 }
 
 def listContains(String key, String value) {
@@ -29,7 +40,8 @@ def listContains(String key, String value) {
 
 def listGet(String key) {
     def fullKey = "${keyPrefix()}:${key}"
-    return redisCmd("lrange ${fullKey} 0 -1").split("\n")
+    def res = redisCmd("lrange ${fullKey} 0 -1")
+    return res ? res.split("\n") : []
 }
 
 def listClear(String key) {
@@ -40,15 +52,15 @@ def listClear(String key) {
 // ---------------------------
 // Convenience wrappers
 // ---------------------------
-def addMissingCert(String domain) {
+def addMissingCert(String domain, Integer ttl = defaultTtl()) {
     if (domain) {
-        listPush("missingCerts", domain.toLowerCase().trim())
+        listPush("missingCerts", domain.toLowerCase().trim(), ttl)
     }
 }
 
-def addChangedRepo(String repo) {
+def addChangedRepo(String repo, Integer ttl = defaultTtl()) {
     if (repo) {
-        listPush("changedRepos", repo.toLowerCase().trim())
+        listPush("changedRepos", repo.toLowerCase().trim(), ttl)
     }
 }
 

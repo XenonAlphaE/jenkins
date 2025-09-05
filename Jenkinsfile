@@ -1,5 +1,6 @@
 import groovy.transform.Field
 
+@Field def state
 
 // --- Helper functions ---
 def extractDomain(String url) {
@@ -129,7 +130,7 @@ pipeline {
 
                     buildUtils  = load 'lib/buildUtils.groovy'
 
-                    state = pipelineState()   // ✅ comes from vars/pipelineState.groovy
+                    state = pipelineState()   // from vars/pipelineState.groovy
                     // deployUtils = load 'lib/deployUtils.groovy'
                     // nginxUtils  = load 'lib/nginxUtils.groovy'   
 

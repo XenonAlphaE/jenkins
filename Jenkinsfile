@@ -122,10 +122,23 @@ pipeline {
             steps {
                 script {
                     try {
-                        redisState("set", [key: "foo", value: "bar"])
+                        // Clear at start
+                        clearAll()
 
-                        def exists = redisState("lcontains", [key: "mylist", value: "banana"])
-                        echo "Has banana? ${exists}"
+                        // Push values
+                        redisListPush("missingCerts", "example.com")
+                        redisListPush("changedRepos", "my-repo")
+
+                        // Check
+                        if (isMissingCert("example.com")) {
+                            echo "Missing cert for example.com"
+                        }
+                        if (isNewCommit("my-repo")) {
+                            echo "New commit for my-repo"
+                        }
+
+                        // Clear at end
+                        clearAll()
                     } catch (Exception e) {
                         echo "redisState not found: ${e}"
                     }

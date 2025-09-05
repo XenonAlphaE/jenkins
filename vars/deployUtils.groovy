@@ -1,5 +1,5 @@
 def deploy(repo, envConf, vpsInfos) {
-    if (repo.type == "nextjs") {
+    if (repo.buildType == "nextjs") {
         deployNextjs(repo, envConf, vpsInfos)
     // } else if (repo.type == "docker") {
     //     deployDocker(repo, envConf, vpsInfo)

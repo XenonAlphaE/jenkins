@@ -1,4 +1,5 @@
-import groovy.transform.Field
+// This annotation tells Jenkins to load the library you configured
+@Library('my-shared-library') _ 
 
 // --- Helper functions ---
 def extractDomain(String url) {

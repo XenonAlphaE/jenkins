@@ -125,9 +125,10 @@ pipeline {
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
-                    state = load "pipelineState.groovy"
 
                     buildUtils  = load 'lib/buildUtils.groovy'
+                    
+                    state = load 'pipelineState.groovy'
                     // deployUtils = load 'lib/deployUtils.groovy'
                     // nginxUtils  = load 'lib/nginxUtils.groovy'   
 

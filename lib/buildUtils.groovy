@@ -1,6 +1,6 @@
-def build(repo, envConf, idx) {
+def build(repo, envConf, idx, state) {
     if (repo.buildType == "nextjs") {
-        buildNextjs(repo, envConf, idx)
+        buildNextjs(repo, envConf, idx, state)
     // } else if (repo.buildType == "docker") {
     //     buildDocker(repo, envConf, idx)
     } else {
@@ -16,23 +16,12 @@ def extractDomain(String url) {
         .replaceAll(/^www\./, '')        // strip leading www
 }
 
-// Check if domain exists in MISSING_CERTS string
-def isMissingCert(String domain) {
-    if (!missingCerts || missingCerts.isEmpty()) {
-        return false
-    }
-    def domainList = missingCerts.collect { it?.trim()?.toLowerCase() }
-                             .findAll { it } // filter out null/empty
-    return domainList.contains(domain.toLowerCase())
-}
-
-
 private def buildNextjs(repo, envConf, idx) {
     echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
     def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-    if (isMissingCert(domain)) {
-        echo "⏭️ Skipping build for ${envConf.name} (${domain}) due to missing cert"
+    if (domain && state.hasMissingCert(domain)) {
+        echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
         return
     }
 

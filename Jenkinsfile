@@ -1,8 +1,7 @@
 import groovy.transform.Field
 
-
-@Field def changedRepos = []
-@Field def missingCerts = []
+def stateLib = load "pipelineState.groovy"
+@Field PipelineState state = new stateLib.PipelineState()
 
 
 // --- Helper functions ---
@@ -13,24 +12,6 @@ def extractDomain(String url) {
         .replaceAll(/^www\./, '')        // strip leading www
 }
 
-// Check if domain exists in MISSING_CERTS string
-def isMissingCert(String domain) {
-    if (!missingCerts || missingCerts.isEmpty()) {
-        return false
-    }
-    def domainList = missingCerts.collect { it?.trim()?.toLowerCase() }
-                             .findAll { it } // filter out null/empty
-    return domainList.contains(domain.toLowerCase())
-}
-
-def isNewCommit(String repo) {
-    if (!changedRepos || changedRepos.isEmpty()) {
-        return false
-    }
-    def repoList = changedRepos.collect { it?.trim()?.toLowerCase() }
-                             .findAll { it } // filter out null/empty
-    return repoList.contains(repo.toLowerCase())
-}
 
 // Run a map of tasks with maxParallel at once
 def runWithMaxParallel(tasks, maxParallel = 3) {
@@ -48,7 +29,7 @@ def runWithMaxParallel(tasks, maxParallel = 3) {
 
 def generateNginxConfigs() {
     repos.each { repo ->
-        if (!params.FORCE_BUILD_ALL && !isNewCommit(repo.folder)) {
+        if (!params.FORCE_BUILD_ALL && !state.hasChangedRepo(repo.folder)) {
             echo "⏭️ Skipping nginx config for ${repo.folder}, no changes detected"
             return
         }
@@ -58,7 +39,7 @@ def generateNginxConfigs() {
             repo.envs.each { envConf ->
                 def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-                if (isMissingCert(domain)) {
+                if (state.hasMissingCert(domain)) {
                     echo "⏭️ Skipping nginx config for ${envConf.name} (${domain}) due to missing cert"
                     return
                 }
@@ -333,7 +314,7 @@ pipeline {
 
                     repos.each { repo ->
                         parallelBuilds["Repo-${repo.folder}"] = {
-                            if (!params.FORCE_BUILD_ALL && !isNewCommit(repo.folder)) {
+                            if (!params.FORCE_BUILD_ALL && !state.hasChangedRepo(repo.folder)) {
                                 echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
                                 return
                             }
@@ -341,7 +322,7 @@ pipeline {
                             def vpsInfo = vpsInfos[repo.vpsRef]
                             dir(repo.folder) {
                                 repo.envs.eachWithIndex { envConf, idx ->
-                                    buildUtils.build(repo, envConf, idx)  // 👈 global var
+                                    buildUtils.build(repo, envConf, idx, state)  // 👈 global var
                                     // def domain = extractDomain(envConf.MAIN_DOMAIN)
 
                                     // if (isMissingCert(domain)) {
@@ -418,7 +399,7 @@ pipeline {
 
                     repos.each { repo ->
                         parallelTasks["Repo-${repo.folder}"] = {
-                            if (!params.FORCE_BUILD_ALL && !isNewCommit(repo.folder)) {
+                            if (!params.FORCE_BUILD_ALL && !state.hasChangedRepo(repo.folder)) {
                                 echo "⏭️ Skipping deploy for ${repo.folder}, no changes detected"
                                 return
                             }
@@ -428,7 +409,7 @@ pipeline {
                                 repo.envs.each { envConf ->
                                     def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-                                    if (isMissingCert(domain)) {
+                                    if (state.hasMissingCert(domain)) {
                                         echo "⏭️ Skipping deploy for ${envConf.name} (${domain}) due to missing cert"
                                         return
                                     }

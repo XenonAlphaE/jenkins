@@ -1,13 +1,6 @@
 // This annotation tells Jenkins to load the library you configured
 @Library('my-shared-library') _ 
 
-// --- Helper functions ---
-def extractDomain(String url) {
-    return url
-        .replaceAll(/^https?:\/\//, '')  // remove http(s)
-        .replaceAll(/\/$/, '')           // remove trailing slash
-        .replaceAll(/^www\./, '')        // strip leading www
-}
 
 
 // Run a map of tasks with maxParallel at once
@@ -34,7 +27,7 @@ def generateNginxConfigs() {
         def vpsInfo = vpsInfos[repo.vpsRef]
         dir(repo.folder) {
             repo.envs.each { envConf ->
-                def domain = extractDomain(envConf.MAIN_DOMAIN)
+                def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
                 if (state().hasMissingCert(domain)) {
                     echo "⏭️ Skipping nginx config for ${envConf.name} (${domain}) due to missing cert"
@@ -295,7 +288,7 @@ pipeline {
                     reposToCheck.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
                         repo.envs.each { site ->
-                            def domain = extractDomain(site.MAIN_DOMAIN)
+                            def domain = commonUtils.extractDomain(site.MAIN_DOMAIN)
 
                             sshagent (credentials: [vpsInfo.vpsCredId]) {
                                 def exists = sh(

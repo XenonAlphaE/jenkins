@@ -10,19 +10,12 @@ def build(repo, envConf, idx) {
     }
 }
 
-// --- Helper functions ---
-def extractDomain(String url) {
-    return url
-        .replaceAll(/^https?:\/\//, '')  // remove http(s)
-        .replaceAll(/\/$/, '')           // remove trailing slash
-        .replaceAll(/^www\./, '')        // strip leading www
-}
 
 private def buildNextjs(repo, envConf, idx) {
     dir(repo.folder) {
         echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
 
-        def domain = extractDomain(envConf.MAIN_DOMAIN)
+        def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
         if (domain && redisState.isMissingCert(domain)) {
             echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"

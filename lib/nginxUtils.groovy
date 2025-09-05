@@ -1,11 +1,6 @@
 def generate(repo, envConf, vpsInfo, nginxTemplate, missingCerts) {
-    def extractDomain = { url ->
-        url.replaceAll(/^https?:\/\//, '')
-           .replaceAll(/\/$/, '')
-           .replaceAll(/^www\./, '')
-    }
 
-    def domain = extractDomain(envConf.MAIN_DOMAIN)
+    def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
     // skip if cert missing
     if (missingCerts.contains(domain.toLowerCase())) {

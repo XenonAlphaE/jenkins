@@ -2,7 +2,7 @@ def redisCmd(String cmd) {
     def host = env.REDIS_HOST ?: "redis"
     def port = env.REDIS_PORT ?: "6379"
 
-    def pass = env.REDIS_PASSWORD ?: ""
+    def pass = ""
     def authPart = pass ? "-a ${pass}" : ""
     return sh(
         script: "redis-cli -h ${host} -p ${port} ${authPart} ${cmd}",

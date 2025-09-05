@@ -122,12 +122,14 @@ pipeline {
         stage('Load Script') {
             steps {
                 script {
+                    checkout scm   // 👈 ensures repo is available
+
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
 
                     buildUtils  = load 'lib/buildUtils.groovy'
-                    
+
                     state = load 'pipelineState.groovy'
                     // deployUtils = load 'lib/deployUtils.groovy'
                     // nginxUtils  = load 'lib/nginxUtils.groovy'   

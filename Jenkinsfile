@@ -139,7 +139,7 @@ pipeline {
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
 
-                    buildUtils  = load 'lib/buildUtils.groovy'
+                    // buildUtils  = load 'lib/buildUtils.groovy'
 
                     // state = pipelineState()   // from vars/pipelineState.groovy
                     // deployUtils = load 'lib/deployUtils.groovy'
@@ -325,7 +325,6 @@ pipeline {
             }
         }
 
-
         stage('Build Projects') {
             steps {
                 script {
@@ -333,83 +332,106 @@ pipeline {
 
                     repos.each { repo ->
                         parallelBuilds["Repo-${repo.folder}"] = {
-                            if (!params.FORCE_BUILD_ALL && !state().hasChangedRepo(repo.folder)) {
+                            if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
                                 echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
                                 return
                             }
 
-                            def vpsInfo = vpsInfos[repo.vpsRef]
-                            dir(repo.folder) {
-                                repo.envs.eachWithIndex { envConf, idx ->
-                                    buildUtils.build(repo, envConf, idx)  // 👈 global var
-                                    // def domain = extractDomain(envConf.MAIN_DOMAIN)
-
-                                    // if (isMissingCert(domain)) {
-                                    //     echo "⏭️ Skipping build for ${envConf.name} (${domain}) due to missing cert"
-                                    //     return
-                                    // }
-
-                                    // echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
-
-                                    // withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
-                                    //     if (idx == 0) {
-                                    //         // 👉 First env: full CI build
-                                    //         sh '''
-                                    //             if [ -f package.json ]; then
-                                    //                 export CI=true
-                                    //                 npm ci
-                                    //                 npx next build && npx next-sitemap
-
-                                    //                 if [ -d .next ]; then
-                                    //                     rm -rf .next/cache || true
-                                    //                     rm -rf .next/server || true
-                                    //                     rm -rf .next/**/*.nft.json || true
-                                    //                 fi
-                                    //             else
-                                    //                 echo "No package.json found, skipping build."
-                                    //             fi
-                                    //         '''
-                                    //     } else {
-                                    //         sh '''
-                                    //             if [ -f package.json ]; then
-                                    //                 npx next build && npx next-sitemap
-
-                                    //                 if [ -d .next ]; then
-                                    //                     rm -rf .next/cache || true
-                                    //                     rm -rf .next/server || true
-                                    //                     rm -rf .next/**/*.nft.json || true
-                                    //                 fi
-                                    //             else
-                                    //                 echo "No package.json found, skipping build."
-                                    //             fi
-                                    //         '''                                        
-                                    //     }
-
-                                    //     def envOut = "outs/${envConf.name}"
-                                    //     sh """
-                                    //         mkdir -p outs
-                                    //         rm -rf ${envOut} || true
-                                    //         cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
-                                    //     """
-
-                                    //     sh """
-                                    //         if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
-                                    //             echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
-                                    //         else
-                                    //             echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
-                                    //             exit 1
-                                    //         fi
-                                    //     """
-                                    // }
-                                }
+                            repo.envs.eachWithIndex { envConf, idx ->
+                                buildUtils.build(repo, envConf, idx)
                             }
                         }
                     }
 
-                    runWithMaxParallel(parallelBuilds, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    parallel parallelBuilds
                 }
             }
         }
+
+        // stage('Build Projects') {
+        //     steps {
+        //         script {
+        //             def parallelBuilds = [:]
+
+        //             repos.each { repo ->
+        //                 parallelBuilds["Repo-${repo.folder}"] = {
+        //                     if (!params.FORCE_BUILD_ALL && !state().hasChangedRepo(repo.folder)) {
+        //                         echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
+        //                         return
+        //                     }
+
+        //                     def vpsInfo = vpsInfos[repo.vpsRef]
+        //                     dir(repo.folder) {
+        //                         repo.envs.eachWithIndex { envConf, idx ->
+        //                             buildUtils.build(repo, envConf, idx)  // 👈 global var
+        //                             // def domain = extractDomain(envConf.MAIN_DOMAIN)
+
+        //                             // if (isMissingCert(domain)) {
+        //                             //     echo "⏭️ Skipping build for ${envConf.name} (${domain}) due to missing cert"
+        //                             //     return
+        //                             // }
+
+        //                             // echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
+
+        //                             // withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
+        //                             //     if (idx == 0) {
+        //                             //         // 👉 First env: full CI build
+        //                             //         sh '''
+        //                             //             if [ -f package.json ]; then
+        //                             //                 export CI=true
+        //                             //                 npm ci
+        //                             //                 npx next build && npx next-sitemap
+
+        //                             //                 if [ -d .next ]; then
+        //                             //                     rm -rf .next/cache || true
+        //                             //                     rm -rf .next/server || true
+        //                             //                     rm -rf .next/**/*.nft.json || true
+        //                             //                 fi
+        //                             //             else
+        //                             //                 echo "No package.json found, skipping build."
+        //                             //             fi
+        //                             //         '''
+        //                             //     } else {
+        //                             //         sh '''
+        //                             //             if [ -f package.json ]; then
+        //                             //                 npx next build && npx next-sitemap
+
+        //                             //                 if [ -d .next ]; then
+        //                             //                     rm -rf .next/cache || true
+        //                             //                     rm -rf .next/server || true
+        //                             //                     rm -rf .next/**/*.nft.json || true
+        //                             //                 fi
+        //                             //             else
+        //                             //                 echo "No package.json found, skipping build."
+        //                             //             fi
+        //                             //         '''                                        
+        //                             //     }
+
+        //                             //     def envOut = "outs/${envConf.name}"
+        //                             //     sh """
+        //                             //         mkdir -p outs
+        //                             //         rm -rf ${envOut} || true
+        //                             //         cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
+        //                             //     """
+
+        //                             //     sh """
+        //                             //         if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
+        //                             //             echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
+        //                             //         else
+        //                             //             echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
+        //                             //             exit 1
+        //                             //         fi
+        //                             //     """
+        //                             // }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+
+        //             runWithMaxParallel(parallelBuilds, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+        //         }
+        //     }
+        // }
 
         stage('Deploy Outs to VPS') {
             steps {

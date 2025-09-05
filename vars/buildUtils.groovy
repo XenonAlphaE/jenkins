@@ -1,4 +1,6 @@
-def build(repo, envConf, idx, state) {
+// vars/buildUtils.groovy
+
+def build(repo, envConf, idx) {
     if (repo.buildType == "nextjs") {
         buildNextjs(repo, envConf, idx)
     // } else if (repo.buildType == "docker") {
@@ -29,18 +31,13 @@ private def buildNextjs(repo, envConf, idx) {
 
     withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
         if (idx == 0) {
-            // 👉 First env: full CI build
             sh '''
                 if [ -f package.json ]; then
                     export CI=true
                     npm ci
                     npx next build && npx next-sitemap
-
-                    if [ -d .next ]; then
-                        rm -rf .next/cache || true
-                        rm -rf .next/server || true
-                        rm -rf .next/**/*.nft.json || true
-                    fi
+                    rm -rf .next/cache .next/server || true
+                    rm -rf .next/**/*.nft.json || true
                 else
                     echo "No package.json found, skipping build."
                 fi
@@ -49,12 +46,8 @@ private def buildNextjs(repo, envConf, idx) {
             sh '''
                 if [ -f package.json ]; then
                     npx next build && npx next-sitemap
-
-                    if [ -d .next ]; then
-                        rm -rf .next/cache || true
-                        rm -rf .next/server || true
-                        rm -rf .next/**/*.nft.json || true
-                    fi
+                    rm -rf .next/cache .next/server || true
+                    rm -rf .next/**/*.nft.json || true
                 else
                     echo "No package.json found, skipping build."
                 fi
@@ -86,5 +79,5 @@ private def buildDocker(repo, envConf, idx) {
     """
 }
 
-
-return [ build: this.&build ]   // only export `build`
+// Only export `build` helper
+return [ build: this.&build ]

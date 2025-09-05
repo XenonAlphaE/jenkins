@@ -5,7 +5,7 @@ return [
         branch: 'pepenode',
         folder: 'pepenode',
         credId: 'id_ed25519_xenonalphae',
-
+        buildType: 'nextjs',
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
 
         envs: [

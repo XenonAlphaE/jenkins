@@ -146,6 +146,11 @@ pipeline {
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
+
+                    buildUtils  = load 'lib/buildUtils.groovy'
+                    // deployUtils = load 'lib/deployUtils.groovy'
+                    // nginxUtils  = load 'lib/nginxUtils.groovy'   
+
                 }
             }
         }
@@ -336,65 +341,66 @@ pipeline {
                             def vpsInfo = vpsInfos[repo.vpsRef]
                             dir(repo.folder) {
                                 repo.envs.eachWithIndex { envConf, idx ->
-                                    def domain = extractDomain(envConf.MAIN_DOMAIN)
+                                    buildUtils.build(repo, envConf, idx)  // 👈 global var
+                                    // def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-                                    if (isMissingCert(domain)) {
-                                        echo "⏭️ Skipping build for ${envConf.name} (${domain}) due to missing cert"
-                                        return
-                                    }
+                                    // if (isMissingCert(domain)) {
+                                    //     echo "⏭️ Skipping build for ${envConf.name} (${domain}) due to missing cert"
+                                    //     return
+                                    // }
 
-                                    echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
+                                    // echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
 
-                                    withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
-                                        if (idx == 0) {
-                                            // 👉 First env: full CI build
-                                            sh '''
-                                                if [ -f package.json ]; then
-                                                    export CI=true
-                                                    npm ci
-                                                    npx next build && npx next-sitemap
+                                    // withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
+                                    //     if (idx == 0) {
+                                    //         // 👉 First env: full CI build
+                                    //         sh '''
+                                    //             if [ -f package.json ]; then
+                                    //                 export CI=true
+                                    //                 npm ci
+                                    //                 npx next build && npx next-sitemap
 
-                                                    if [ -d .next ]; then
-                                                        rm -rf .next/cache || true
-                                                        rm -rf .next/server || true
-                                                        rm -rf .next/**/*.nft.json || true
-                                                    fi
-                                                else
-                                                    echo "No package.json found, skipping build."
-                                                fi
-                                            '''
-                                        } else {
-                                            sh '''
-                                                if [ -f package.json ]; then
-                                                    npx next build && npx next-sitemap
+                                    //                 if [ -d .next ]; then
+                                    //                     rm -rf .next/cache || true
+                                    //                     rm -rf .next/server || true
+                                    //                     rm -rf .next/**/*.nft.json || true
+                                    //                 fi
+                                    //             else
+                                    //                 echo "No package.json found, skipping build."
+                                    //             fi
+                                    //         '''
+                                    //     } else {
+                                    //         sh '''
+                                    //             if [ -f package.json ]; then
+                                    //                 npx next build && npx next-sitemap
 
-                                                    if [ -d .next ]; then
-                                                        rm -rf .next/cache || true
-                                                        rm -rf .next/server || true
-                                                        rm -rf .next/**/*.nft.json || true
-                                                    fi
-                                                else
-                                                    echo "No package.json found, skipping build."
-                                                fi
-                                            '''                                        
-                                        }
+                                    //                 if [ -d .next ]; then
+                                    //                     rm -rf .next/cache || true
+                                    //                     rm -rf .next/server || true
+                                    //                     rm -rf .next/**/*.nft.json || true
+                                    //                 fi
+                                    //             else
+                                    //                 echo "No package.json found, skipping build."
+                                    //             fi
+                                    //         '''                                        
+                                    //     }
 
-                                        def envOut = "outs/${envConf.name}"
-                                        sh """
-                                            mkdir -p outs
-                                            rm -rf ${envOut} || true
-                                            cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
-                                        """
+                                    //     def envOut = "outs/${envConf.name}"
+                                    //     sh """
+                                    //         mkdir -p outs
+                                    //         rm -rf ${envOut} || true
+                                    //         cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
+                                    //     """
 
-                                        sh """
-                                            if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
-                                                echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
-                                            else
-                                                echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
-                                                exit 1
-                                            fi
-                                        """
-                                    }
+                                    //     sh """
+                                    //         if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
+                                    //             echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
+                                    //         else
+                                    //             echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
+                                    //             exit 1
+                                    //         fi
+                                    //     """
+                                    // }
                                 }
                             }
                         }
@@ -458,12 +464,13 @@ pipeline {
         stage('Generate NGNIX config and deploy SSH') {
             steps {
                 script {
-                    generateNginxConfigs()
-
                     if (!params.FORCE_BUILD_ALL && !changedRepos) {
                         echo "⏭️ Skipping nginx reload, no changes detected"
                         return
                     }
+
+                    generateNginxConfigs()
+
 
                     vpsInfos.values().each { vpsConf -> 
                         sshagent(credentials: [vpsConf.vpsCredId]) {

@@ -4,7 +4,7 @@ def loadRepos(String name) {
 
 def repos = []
 repos += load "${env.WORKSPACE}/gitRepos/pepenode.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/hyper.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/hyper.groovy"
 
 
 return repos.collect { repo ->

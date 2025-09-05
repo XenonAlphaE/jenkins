@@ -96,3 +96,6 @@ private def buildDocker(repo, envConf, idx) {
         docker build -t ${repo.folder}:${envConf.name} .
     """
 }
+
+
+return [ build: this.&build ]   // only export `build`

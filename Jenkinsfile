@@ -117,14 +117,20 @@ pipeline {
 
 
     stages {
-        stage('Init') {
+        stage('Check') {
             steps {
                 script {
-                    def state = redisState()
-                    state.clearAll()       // 🔥 start with a clean slate
+                    try {
+                        echo "Calling redisState..."
+                        def x = redisState("hello")
+                        echo "Result: ${x}"
+                    } catch (Exception e) {
+                        echo "redisState not found: ${e}"
+                    }
                 }
             }
         }
+
 
 
         stage('Load Script') {

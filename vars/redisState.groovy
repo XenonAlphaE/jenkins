@@ -1,8 +1,7 @@
 import redis.clients.jedis.Jedis
 
-// Shared lib entrypoint — Jenkins will expose `redisState()`
-def call(String jobName = env.JOB_NAME, String buildNum = env.BUILD_NUMBER) {
-    return new RedisState(jobName, buildNum)
+def call(String name = "test") {
+    return "redisState loaded for ${name}"
 }
 
 class RedisState implements Serializable {

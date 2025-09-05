@@ -1,7 +1,7 @@
 import groovy.transform.Field
 
-def stateLib = load "pipelineState.groovy"
-@Field PipelineState state = new stateLib.PipelineState()
+def PipelineState = load "pipelineState.groovy"
+@Field def state = new PipelineState()
 
 
 // --- Helper functions ---

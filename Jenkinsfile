@@ -123,17 +123,6 @@ pipeline {
                 script {
                     try {
                         redisState.clearAll()
-
-                        // Instead of calling listPush manually
-                        redisState.addMissingCert("example.com")
-                        redisState.addChangedRepo("my-repo")
-
-                        if (redisState.isMissingCert("example.com")) {
-                            echo "Missing cert found"
-                        }
-                        if (redisState.isNewCommit("my-repo")) {
-                            echo "Commit found"
-                        }
                     } catch (Exception e) {
                         echo "redisState not found: ${e}"
                     }

@@ -14,7 +14,7 @@ private def deployNextjs(repo, envConf, vpsInfos) {
     dir(repo.folder) {
         def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
-        if (state().hasMissingCert(domain)) {
+        if (redisState.isMissingCert(domain)) {
             echo "⏭️ Skipping deploy for ${envConf.name} (${domain}) due to missing cert"
             return
         }

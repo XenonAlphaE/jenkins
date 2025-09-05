@@ -31,4 +31,4 @@ class PipelineState implements Serializable {
         echo "  - Missing certs: ${missingCerts}"
     }
 }
-return PipelineState
+return new PipelineState()

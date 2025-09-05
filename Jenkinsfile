@@ -1,9 +1,7 @@
 import groovy.transform.Field
 
-def PipelineState = load "pipelineState.groovy"
+def state = load "pipelineState.groovy"
 
-// store in a global serializable object
-def state = new PipelineState()
 
 
 // --- Helper functions ---

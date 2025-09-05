@@ -120,7 +120,7 @@ pipeline {
         stage('Init') {
             steps {
                 script {
-                    state = redisState()   // 🚀 create namespace per job+build
+                    def state = redisState()
                     state.clearAll()       // 🔥 start with a clean slate
                 }
             }

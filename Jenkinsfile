@@ -1,7 +1,6 @@
 import groovy.transform.Field
 
-def stateLib = load "pipelineState.groovy"
-@Field def state = stateLib.newState()   // safe global instance
+@Field def state
 
 // --- Helper functions ---
 def extractDomain(String url) {
@@ -126,7 +125,7 @@ pipeline {
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
-                    state = new stateLib.PipelineState()
+                    state = load "pipelineState.groovy"
 
                     buildUtils  = load 'lib/buildUtils.groovy'
                     // deployUtils = load 'lib/deployUtils.groovy'

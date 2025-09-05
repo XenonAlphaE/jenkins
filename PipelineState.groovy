@@ -17,7 +17,4 @@ class PipelineState implements Serializable {
     }
 }
 
-// 👇 Return a factory method so Jenkins can use it
-return [
-    newState: { -> new PipelineState() }
-]
+return new PipelineState()

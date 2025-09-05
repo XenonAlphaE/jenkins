@@ -293,6 +293,8 @@ pipeline {
 
 
         stage('Check Certificates') {
+            def changedRepos = redisState.getChangedRepos()
+
             when { expression { return params.FORCE_BUILD_ALL || !changedRepos.isEmpty() } }
 
             steps {
@@ -315,7 +317,7 @@ pipeline {
 
                                 if (exists == "no") {
                                     echo "⚠️  Certificate missing for ${domain}"
-                                    missingCerts << domain
+                                    redisState.addMissingCert(domain)
                                 } else {
                                     echo "✅ Certificate exists for ${domain}"
                                 }
@@ -323,8 +325,8 @@ pipeline {
                         }
                     }
 
-                    if (missingCerts) {
-                        echo "⚠️  Some certificates are missing: ${missingCerts}"
+                    if (redisState.getMissingCerts()) {
+                        echo "⚠️  Some certificates are missing: ${redisState.getMissingCerts()}"
                     } else {
                         echo "✅ All certificates present"
                     }
@@ -348,7 +350,7 @@ pipeline {
                             def vpsInfo = vpsInfos[repo.vpsRef]
                             dir(repo.folder) {
                                 repo.envs.eachWithIndex { envConf, idx ->
-                                    buildUtils.build(repo, envConf, idx, state())  // 👈 global var
+                                    buildUtils.build(repo, envConf, idx)  // 👈 global var
                                     // def domain = extractDomain(envConf.MAIN_DOMAIN)
 
                                     // if (isMissingCert(domain)) {

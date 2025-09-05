@@ -1,6 +1,6 @@
 def build(repo, envConf, idx, state) {
     if (repo.buildType == "nextjs") {
-        buildNextjs(repo, envConf, idx, state)
+        buildNextjs(repo, envConf, idx)
     // } else if (repo.buildType == "docker") {
     //     buildDocker(repo, envConf, idx)
     } else {
@@ -20,7 +20,7 @@ private def buildNextjs(repo, envConf, idx) {
     echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
     def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-    if (domain && state.hasMissingCert(domain)) {
+    if (domain && redisState.isMissingCert(domain)) {
         echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
         return
     }

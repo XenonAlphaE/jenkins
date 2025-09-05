@@ -118,7 +118,7 @@ pipeline {
 
 
     stages {
-        stage('Check') {
+        stage('Clear redis') {
             steps {
                 script {
                     try {
@@ -146,8 +146,6 @@ pipeline {
         stage('Load Script') {
             steps {
                 script {
-                    checkout scm   // 👈 ensures repo is available
-
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
                     ngnixTemplate = readFile('ngnix/https.template.conf')
@@ -219,6 +217,7 @@ pipeline {
             steps {
                 script {
                     def parallelTasks = [:]
+                    def changedRepos = redisState.getChangedRepos()
 
 
                     repos.each { repo ->
@@ -242,8 +241,8 @@ pipeline {
                                             [$class: 'PruneStaleBranch']
                                         ]
                                     ])
-
-                                    changedRepos << repo.folder
+                                    redisState.addChangedRepo(repo.folder)
+                                    // changedRepos << repo.folder
                                 } else {
                                     def oldCommit = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 
@@ -266,7 +265,8 @@ pipeline {
                                     if (oldCommit != newCommit) {
                                         echo "🔄 Changes detected in ${repo.folder}: ${oldCommit} → ${newCommit}"
 
-                                        changedRepos << repo.folder
+                                        // changedRepos << repo.folder
+                                        redisState.addChangedRepo(repo.folder)
 
                                     } else {
                                         echo "⏭️ No changes in ${repo.folder}"

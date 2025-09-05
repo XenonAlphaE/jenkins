@@ -29,6 +29,7 @@ def listPush(String key, String value, Integer ttl = defaultTtl()) {
     if (ttl > 0) {
         redisCmd("expire ${fullKey} ${ttl}")
     }
+    echo "[redisState] Added '${value}' to ${fullKey} (ttl=${ttl}s)"
     return true
 }
 
@@ -41,11 +42,14 @@ def listContains(String key, String value) {
 def listGet(String key) {
     def fullKey = "${keyPrefix()}:${key}"
     def res = redisCmd("lrange ${fullKey} 0 -1")
-    return res ? res.split("\n") : []
+    def list = res ? res.split("\n") : []
+    echo "[redisState] Current values for ${fullKey} = ${list}"
+    return list
 }
 
 def listClear(String key) {
     def fullKey = "${keyPrefix()}:${key}"
+    echo "[redisState] Clearing list for ${fullKey}"
     return redisCmd("del ${fullKey}")
 }
 
@@ -62,6 +66,14 @@ def addChangedRepo(String repo, Integer ttl = defaultTtl()) {
     if (repo) {
         listPush("changedRepos", repo.toLowerCase().trim(), ttl)
     }
+}
+
+def getMissingCerts() {
+    return listGet("missingCerts")
+}
+
+def getChangedRepos() {
+    return listGet("changedRepos")
 }
 
 // ---------------------------

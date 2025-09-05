@@ -122,9 +122,10 @@ pipeline {
             steps {
                 script {
                     try {
-                        echo "Calling redisState..."
-                        def x = redisState("hello")
-                        echo "Result: ${x}"
+                        redisState("set", [key: "foo", value: "bar"])
+
+                        def exists = redisState("lcontains", [key: "mylist", value: "banana"])
+                        echo "Has banana? ${exists}"
                     } catch (Exception e) {
                         echo "redisState not found: ${e}"
                     }

@@ -22,8 +22,9 @@ which npm
 echo $PATH
 
 
-fix the node-gyp
+# fix the node-gyp
 docker exec -it -u root jenkins-sandbox bash
+sudo apt-get update && sudo apt-get install -y redis-tools
 
 # Inside Jenkins container
 apt-get update

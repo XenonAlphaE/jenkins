@@ -95,3 +95,7 @@ redundant.each { cert ->
         "
     """
 }
+
+
+======== docker compose =============
+docker-compose up -d

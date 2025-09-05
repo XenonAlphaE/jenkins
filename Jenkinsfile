@@ -293,12 +293,14 @@ pipeline {
 
 
         stage('Check Certificates') {
-            def changedRepos = redisState.getChangedRepos()
-
-            when { expression { return params.FORCE_BUILD_ALL || !changedRepos.isEmpty() } }
+            when { expression { 
+                def changedRepos = redisState.getChangedRepos()
+                return params.FORCE_BUILD_ALL || !changedRepos.isEmpty() 
+            } }
 
             steps {
                 script {
+                    def changedRepos = redisState.getChangedRepos()
                     def reposToCheck = params.FORCE_BUILD_ALL ? repos : repos.findAll { r -> changedRepos.contains(r.folder) }
 
                     reposToCheck.each { repo ->

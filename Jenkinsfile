@@ -3,9 +3,7 @@ import groovy.transform.Field
 def PipelineState = load "pipelineState.groovy"
 
 // store in a global serializable object
-@Field Map globals = [ state: new PipelineState() ]
-
-def state() { globals.state }   // small helper
+def state = new PipelineState()
 
 
 // --- Helper functions ---

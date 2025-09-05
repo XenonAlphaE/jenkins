@@ -1,9 +1,7 @@
 import groovy.transform.Field
 
 def stateLib = load "pipelineState.groovy"
-
-// Declare global field but don’t init yet
-@Field PipelineState state
+@Field def state = stateLib.newState()   // safe global instance
 
 // --- Helper functions ---
 def extractDomain(String url) {

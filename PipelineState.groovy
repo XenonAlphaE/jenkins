@@ -16,4 +16,8 @@ class PipelineState implements Serializable {
         return missingCerts.contains(domain?.toLowerCase())
     }
 }
-return this
+
+// 👇 Return a factory method so Jenkins can use it
+return [
+    newState: { -> new PipelineState() }
+]

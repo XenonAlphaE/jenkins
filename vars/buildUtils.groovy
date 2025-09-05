@@ -19,56 +19,59 @@ def extractDomain(String url) {
 }
 
 private def buildNextjs(repo, envConf, idx) {
-    echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
-    def domain = extractDomain(envConf.MAIN_DOMAIN)
+    dir(repo.folder) {
+        echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
 
-    if (domain && redisState.isMissingCert(domain)) {
-        echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
-        return
-    }
+        def domain = extractDomain(envConf.MAIN_DOMAIN)
 
-    echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
-
-    withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
-        if (idx == 0) {
-            sh '''
-                if [ -f package.json ]; then
-                    export CI=true
-                    npm ci
-                    npx next build && npx next-sitemap
-                    rm -rf .next/cache .next/server || true
-                    rm -rf .next/**/*.nft.json || true
-                else
-                    echo "No package.json found, skipping build."
-                fi
-            '''
-        } else {
-            sh '''
-                if [ -f package.json ]; then
-                    npx next build && npx next-sitemap
-                    rm -rf .next/cache .next/server || true
-                    rm -rf .next/**/*.nft.json || true
-                else
-                    echo "No package.json found, skipping build."
-                fi
-            '''                                        
+        if (domain && redisState.isMissingCert(domain)) {
+            echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
+            return
         }
 
-        def envOut = "outs/${envConf.name}"
-        sh """
-            mkdir -p outs
-            rm -rf ${envOut} || true
-            cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
-        """
+        echo "=== Building ${repo.folder} branch >>${repo.branch}<< for environment: ${envConf.name} ==="
 
-        sh """
-            if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
-                echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
-            else
-                echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
-                exit 1
-            fi
-        """
+        withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
+            if (idx == 0) {
+                sh '''
+                    if [ -f package.json ]; then
+                        export CI=true
+                        npm ci
+                        npx next build && npx next-sitemap
+                        rm -rf .next/cache .next/server || true
+                        rm -rf .next/**/*.nft.json || true
+                    else
+                        echo "No package.json found, skipping build."
+                    fi
+                '''
+            } else {
+                sh '''
+                    if [ -f package.json ]; then
+                        npx next build && npx next-sitemap
+                        rm -rf .next/cache .next/server || true
+                        rm -rf .next/**/*.nft.json || true
+                    else
+                        echo "No package.json found, skipping build."
+                    fi
+                '''                                        
+            }
+
+            def envOut = "outs/${envConf.name}"
+            sh """
+                mkdir -p outs
+                rm -rf ${envOut} || true
+                cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
+            """
+
+            sh """
+                if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
+                    echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
+                else
+                    echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
+                    exit 1
+                fi
+            """
+        }
     }
 }
 

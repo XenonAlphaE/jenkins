@@ -488,11 +488,10 @@ pipeline {
                     }
 
                     repos.each { repo ->
-                        dir(repo.folder) {
-                            repo.envs.each { envConf ->
-                                nginxUtils.generate(repo, envConf, vpsInfos )
-                            }
+                        repo.envs.each { envConf ->
+                            nginxUtils.generate(repo, envConf, vpsInfos )
                         }
+                    
                     }
 
                     // generateNginxConfigs()

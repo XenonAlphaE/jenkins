@@ -130,7 +130,7 @@ pipeline {
 
                     buildUtils  = load 'lib/buildUtils.groovy'
 
-                    state = load 'pipelineState.groovy'
+                    state = load 'pipelinestate.groovy'
                     // deployUtils = load 'lib/deployUtils.groovy'
                     // nginxUtils  = load 'lib/nginxUtils.groovy'   
 

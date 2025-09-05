@@ -1,4 +1,3 @@
-// vars/redisState.groovy
 def redisCmd(String cmd) {
     def host = env.REDIS_HOST ?: "redis"
     def port = env.REDIS_PORT ?: "6379"
@@ -17,15 +16,15 @@ def keyPrefix() {
     return "jenkins:${job}:${build}"
 }
 
+def listPush(String key, String value) {
+    def fullKey = "${keyPrefix()}:${key}"
+    return redisCmd("lpush ${fullKey} '${value}'")
+}
+
 def listContains(String key, String value) {
     def fullKey = "${keyPrefix()}:${key}"
     def result = redisCmd("lrange ${fullKey} 0 -1 | grep -x '${value}' || true")
     return result ? true : false
-}
-
-def listPush(String key, String value) {
-    def fullKey = "${keyPrefix()}:${key}"
-    return redisCmd("lpush ${fullKey} '${value}'")
 }
 
 def listGet(String key) {
@@ -38,6 +37,24 @@ def listClear(String key) {
     return redisCmd("del ${fullKey}")
 }
 
+// ---------------------------
+// Convenience wrappers
+// ---------------------------
+def addMissingCert(String domain) {
+    if (domain) {
+        listPush("missingCerts", domain.toLowerCase().trim())
+    }
+}
+
+def addChangedRepo(String repo) {
+    if (repo) {
+        listPush("changedRepos", repo.toLowerCase().trim())
+    }
+}
+
+// ---------------------------
+// Existing API
+// ---------------------------
 def isMissingCert(String domain) {
     if (!domain) return false
     return listContains("missingCerts", domain.toLowerCase().trim())
@@ -53,7 +70,6 @@ def clearAll() {
     listClear("changedRepos")
 }
 
-// Expose as "redisState" step object
-def call() { 
-    return this 
+def call() {
+    return this
 }

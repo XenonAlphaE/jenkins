@@ -122,20 +122,18 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Clear at start
                         redisState.clearAll()
 
-                        redisState.listPush("changedRepos", "my-repo")
-                        if (redisState.isNewCommit("my-repo")) {
-                            echo "New commit detected"
-                        }
+                        // Instead of calling listPush manually
+                        redisState.addMissingCert("example.com")
+                        redisState.addChangedRepo("my-repo")
 
-                        redisState.listPush("missingCerts", "example.com")
                         if (redisState.isMissingCert("example.com")) {
-                            echo "Missing cert for example.com"
+                            echo "Missing cert found"
                         }
-
-                        redisState.clearAll()
+                        if (redisState.isNewCommit("my-repo")) {
+                            echo "Commit found"
+                        }
                     } catch (Exception e) {
                         echo "redisState not found: ${e}"
                     }

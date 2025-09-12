@@ -38,6 +38,9 @@ private def buildNextjs(repo) {
         }
 
         sh '''
+            rm -rf shared_modules
+            mkdir -p shared_modules
+            cp package.json package-lock.json shared_modules/
             export CI=true
             npm ci --prefix shared_modules
             rm -rf .next/cache .next/server || true

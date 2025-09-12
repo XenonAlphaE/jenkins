@@ -76,6 +76,7 @@ private def buildNextjs(repo) {
                             fi
                         """            
                     }
+                } 
             } else {
                 echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
             }

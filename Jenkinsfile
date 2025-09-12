@@ -329,6 +329,8 @@ pipeline {
                                 echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
                                 return
                             }
+                            buildUtils.build(repo);
+                            
 
                             repo.envs.eachWithIndex { envConf, idx ->
                                 buildUtils.build(repo, envConf, idx)

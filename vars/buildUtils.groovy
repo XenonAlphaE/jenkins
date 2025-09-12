@@ -71,7 +71,12 @@ private def buildNextjs(repo) {
 
                 sh """
                     mkdir -p ${buildPath}
-                    rsync -a --exclude=node_modules ./ ${buildPath}
+                    rsync -a  --exclude=node_modules \
+                        --exclude=buildEnvs \
+                        --exclude=.git \
+                        --exclude=.next \
+                        ./ ${buildPath}
+                        
                     ln -s ${workspaceDir}/shared_modules/node_modules ${buildPath}/node_modules
                 """
 

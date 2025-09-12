@@ -1,5 +1,20 @@
 // vars/buildUtils.groovy
 
+// Run a map of tasks with maxParallel at once
+def runWithMaxParallel(tasks, maxParallel = 3) {
+    def keys = tasks.keySet() as List
+    def total = keys.size()
+
+    for (int i = 0; i < total; i += maxParallel) {
+        // 🔑 convert subList to real List so it's serializable
+        def slice = new ArrayList(keys.subList(i, Math.min(i + maxParallel, total)))
+        def batch = [:]
+        slice.each { k -> batch[k] = tasks[k] }
+        parallel batch
+    }
+}
+
+
 def build(repo) {
     if (repo.buildType == "nextjs") {
         buildNextjs(repo)
@@ -33,16 +48,23 @@ private def buildNextjs(repo) {
         sh """
             mkdir -p ${workspaceDir}/outs
         """
+        // Build a parallel job map
+        def tasks = [:]
 
         repo.envs.eachWithIndex { envConf, idx ->
-            echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
 
-            def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
+            def envName   = envConf.name
+            def domain    = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
+            def envOut    = "${workspaceDir}/outs/${envName}"
+            def buildPath = "${workspaceDir}/buildEnvs/${envName}"
 
-            if (!(domain && redisState.isMissingCert(domain))) {
-            
-                def envOut   = "${workspaceDir}/outs/${envConf.name}"
-                def buildPath = "${workspaceDir}/buildEnvs/${envConf.name}"
+            tasks[envName] = {
+                if (domain && redisState.isMissingCert(domain)) {
+                    echo "⏭️ Skipping ${envName}, missing cert for ${domain}"
+                    return
+                }
+
+                echo "📦 Building ${repo.folder} for env ${envName}"
 
                 sh """
                     mkdir -p ${buildPath}
@@ -50,8 +72,8 @@ private def buildNextjs(repo) {
                     ln -s ${workspaceDir}/shared_modules/node_modules ${buildPath}/node_modules
                 """
 
-                dir(buildPath){
-                    withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
+                dir(buildPath) {
+                    withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" }) {
                         sh '''
                             if [ -f package.json ]; then
                                 npx next build && npx next-sitemap
@@ -69,19 +91,65 @@ private def buildNextjs(repo) {
 
                         sh """
                             if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
-                                echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
+                                echo "✅ Build output exists for ${repo.folder}/${envName}"
                             else
                                 echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
                                 exit 1
                             fi
-                        """            
+                        """
                     }
-                } 
-            } else {
-                echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
+                }
             }
+            // echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
+
+            // def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
+
+            // if (!(domain && redisState.isMissingCert(domain))) {
+            
+            //     def envOut   = "${workspaceDir}/outs/${envConf.name}"
+            //     def buildPath = "${workspaceDir}/buildEnvs/${envConf.name}"
+
+            //     sh """
+            //         mkdir -p ${buildPath}
+            //         rsync -a --exclude=node_modules ./ ${buildPath}
+            //         ln -s ${workspaceDir}/shared_modules/node_modules ${buildPath}/node_modules
+            //     """
+
+            //     dir(buildPath){
+            //         withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
+            //             sh '''
+            //                 if [ -f package.json ]; then
+            //                     npx next build && npx next-sitemap
+            //                     rm -rf .next/cache .next/server || true
+            //                     rm -rf .next/**/*.nft.json || true
+            //                 else
+            //                     echo "No package.json found, skipping build."
+            //                 fi
+            //             '''
+
+            //             sh """
+            //                 rm -rf ${envOut} || true
+            //                 cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
+            //             """
+
+            //             sh """
+            //                 if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
+            //                     echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
+            //                 else
+            //                     echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
+            //                     exit 1
+            //                 fi
+            //             """            
+            //         }
+            //     } 
+            // } else {
+            //     echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
+            // }
 
         }
+
+        runWithMaxParallel(tasks, 8)  // 👈 cap parallelism
+
     }
 }
 

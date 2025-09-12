@@ -330,11 +330,6 @@ pipeline {
                                 return
                             }
                             buildUtils.build(repo);
-                            
-
-                            repo.envs.eachWithIndex { envConf, idx ->
-                                buildUtils.build(repo, envConf, idx)
-                            }
                         }
                     }
 

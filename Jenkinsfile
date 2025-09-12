@@ -318,12 +318,6 @@ pipeline {
             }
         }
 
-        stage('Install rsync') {
-            steps {
-                sh 'apt-get update && apt-get install -y rsync'
-            }
-        }
-
 
         stage('Build Projects') {
             steps {

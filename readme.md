@@ -86,7 +86,7 @@ sudo systemctl reload nginx
 docker exec -it -u root jenkins-sandbox bash
 
 apt-get update && apt-get install -y dnsutils
-
+apt-get update && apt-get install -y rsync
 
 
 redundant.each { cert ->

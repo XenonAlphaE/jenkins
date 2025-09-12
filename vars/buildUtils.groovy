@@ -76,7 +76,7 @@ private def buildNextjs(repo) {
                         --exclude=.git \
                         --exclude=.next \
                         ./ ${buildPath}
-                        
+
                     ln -s ${workspaceDir}/shared_modules/node_modules ${buildPath}/node_modules
                 """
 
@@ -156,7 +156,7 @@ private def buildNextjs(repo) {
 
         }
 
-        runWithMaxParallel(tasks, 8)  // 👈 cap parallelism
+        runWithMaxParallel(tasks, 4)  // 👈 cap parallelism
 
     }
 }

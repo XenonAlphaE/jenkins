@@ -13,9 +13,7 @@ def build(repo) {
 
 private def buildNextjs(repo) {
     dir(repo.folder) {
-        echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
-
         echo "=== Building ${repo.folder} branch >>${repo.branch}<< ==="
 
         // Check if package.json exists in this folder
@@ -37,6 +35,8 @@ private def buildNextjs(repo) {
         """
 
         repo.envs.eachWithIndex { envConf, idx ->
+            echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
+
             def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
 
             if (!(domain && redisState.isMissingCert(domain))) {

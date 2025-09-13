@@ -199,9 +199,6 @@ pipeline {
             steps {
                 script {
                     def parallelTasks = [:]
-                    def changedRepos = redisState.getChangedRepos()
-
-
                     repos.each { repo ->
                         parallelTasks["Pull-${repo.folder}"] = {
                             dir(repo.folder) {
@@ -263,6 +260,8 @@ pipeline {
                     }
 
                     runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    
+                    def changedRepos = redisState.getChangedRepos() as List
 
                     echo "Collected repos = ${changedRepos}"
                     if (!params.FORCE_BUILD_ALL && changedRepos.isEmpty()) {

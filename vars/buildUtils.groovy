@@ -69,6 +69,11 @@ private def installNextjs(repo){
 private def buildNextjs(repo, envConf) {
     dir(repo.folder) {
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
+
+        def envName   = envConf.name
+        def domain    = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
+        def envOut    = "${workspaceDir}/outs/${envName}"
+        def buildPath = "${workspaceDir}/buildEnvs/${envName}"
         echo "=== Building ${repo.folder} branch >>${repo.branch}<< for env ${envName} ==="
 
         // Check if package.json exists in this folder
@@ -77,10 +82,6 @@ private def buildNextjs(repo, envConf) {
             return
         }
 
-        def envName   = envConf.name
-        def domain    = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
-        def envOut    = "${workspaceDir}/outs/${envName}"
-        def buildPath = "${workspaceDir}/buildEnvs/${envName}"
 
         
         if (domain && redisState.isMissingCert(domain)) {

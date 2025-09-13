@@ -1,6 +1,8 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .          # folder where your Dockerfile lives
+      dockerfile: Dockerfile.jenkins  # optional if not named "Dockerfile"    container_name: jenkins-sandbox
     container_name: jenkins-sandbox
     ports:
       - "12000:8080"

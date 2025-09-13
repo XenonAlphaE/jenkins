@@ -322,19 +322,32 @@ pipeline {
         stage('Build Projects') {
             steps {
                 script {
-                    def parallelBuilds = [:]
+
+                    def parallelSetups = [:]
 
                     repos.each { repo ->
-                        parallelBuilds["Repo-${repo.folder}"] = {
+                        parallelSetups["setup-${repo.folder}"] = {
                             if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
-                                echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
+                                echo "⏭️ Skipping setup for ${repo.folder}, no changes detected"
                                 return
                             }
-                            buildUtils.build(repo);
+                            buildUtils.setupBuild(repo);
                         }
                     }
 
-                    parallel parallelBuilds
+                    runWithMaxParallel(parallelSetups, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+
+                    def parallelBuilds = [:]
+
+                    repos.each { repo ->
+                        repo.envs.eachWithIndex { envConf, idx ->
+                            parallelBuilds["build-${envConf.name}"] = {
+                                buildUtils.build(repo, envConf);
+                            }
+                        }
+                    }
+
+                    runWithMaxParallel(parallelBuilds, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
                 }
             }
         }

@@ -28,7 +28,7 @@ def build(repo, envConf) {
 
 def setupBuild(repo){
     if (repo.buildType == "nextjs") {
-        buildNextjs(repo)
+        installNextjs(repo)
     // } else if (repo.buildType == "docker") {
     //     buildDocker(repo, envConf, idx)
     } else {

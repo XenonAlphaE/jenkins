@@ -228,7 +228,7 @@ pipeline {
                     reposToCheck.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
                         repo.envs.each { site ->
-                            parallelSetups["check-${site.MAIN_DOMAIN}"] = {
+                            parallelTasks["check-${site.MAIN_DOMAIN}"] = {
 
                                 def domain = commonUtils.extractDomain(site.MAIN_DOMAIN)
 

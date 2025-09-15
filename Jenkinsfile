@@ -70,13 +70,6 @@ pipeline {
                 script {
                     repos = load 'repos.groovy'
                     vpsInfos = load 'vps.groovy'
-                    // ngnixTemplate = readFile('ngnix/https.template.conf')
-
-                    // buildUtils  = load 'lib/buildUtils.groovy'
-
-                    // state = pipelineState()   // from vars/pipelineState.groovy
-                    // deployUtils = load 'lib/deployUtils.groovy'
-                    // nginxUtils  = load 'lib/nginxUtils.groovy'   
 
                 }
             }

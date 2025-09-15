@@ -223,31 +223,37 @@ pipeline {
                 script {
                     def changedRepos = redisState.getChangedRepos() as List
                     def reposToCheck = params.FORCE_BUILD_ALL ? repos : repos.findAll { r -> changedRepos.contains(r.folder) }
+                    def parallelTasks = [:]
 
                     reposToCheck.each { repo ->
                         def vpsInfo = vpsInfos[repo.vpsRef]
                         repo.envs.each { site ->
-                            def domain = commonUtils.extractDomain(site.MAIN_DOMAIN)
+                            parallelSetups["check-${site.MAIN_DOMAIN}"] = {
 
-                            sshagent (credentials: [vpsInfo.vpsCredId]) {
-                                def exists = sh(
-                                    script: """
+                                def domain = commonUtils.extractDomain(site.MAIN_DOMAIN)
 
-                                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
-                                        "sudo test -f /etc/letsencrypt/live/${domain}/fullchain.pem && echo yes || echo no"
-                                    """,
-                                    returnStdout: true
-                                ).trim()
+                                sshagent (credentials: [vpsInfo.vpsCredId]) {
+                                    def exists = sh(
+                                        script: """
 
-                                if (exists == "no") {
-                                    echo "⚠️  Certificate missing for ${domain}"
-                                    redisState.addMissingCert(domain)
-                                } else {
-                                    echo "✅ Certificate exists for ${domain}"
+                                            ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
+                                            "sudo test -f /etc/letsencrypt/live/${domain}/fullchain.pem && echo yes || echo no"
+                                        """,
+                                        returnStdout: true
+                                    ).trim()
+
+                                    if (exists == "no") {
+                                        echo "⚠️  Certificate missing for ${domain}"
+                                        redisState.addMissingCert(domain)
+                                    } else {
+                                        echo "✅ Certificate exists for ${domain}"
+                                    }
                                 }
                             }
                         }
                     }
+
+                    runWithMaxParallel(parallelSetups, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
 
                     if (redisState.getMissingCerts()) {
                         echo "⚠️  Some certificates are missing: ${redisState.getMissingCerts()}"

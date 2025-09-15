@@ -323,6 +323,7 @@ pipeline {
             steps {
                 script {
                     def changedRepos = redisState.getChangedRepos()
+                    def parallelTasks = [:]
 
                     if (!params.FORCE_BUILD_ALL && !changedRepos) {
                         echo "⏭️ Skipping nginx reload, no changes detected"
@@ -331,11 +332,13 @@ pipeline {
 
                     repos.each { repo ->
                         repo.envs.each { envConf ->
-                            nginxUtils.generate(repo, envConf, vpsInfos )
+                            parallelTasks["nginx-${envConf.name}"] = {
+                                nginxUtils.generate(repo, envConf, vpsInfos )
+                            }
                         }
-                    
                     }
 
+                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
 
                     vpsInfos.values().each { vpsConf -> 
                         sshagent(credentials: [vpsConf.vpsCredId]) {

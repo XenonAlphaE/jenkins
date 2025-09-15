@@ -253,7 +253,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelSetups, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
 
                     if (redisState.getMissingCerts()) {
                         echo "⚠️  Some certificates are missing: ${redisState.getMissingCerts()}"

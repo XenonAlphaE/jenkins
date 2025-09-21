@@ -30,6 +30,11 @@ pipeline {
             defaultValue: false,
             description: 'Force build & deploy all repos, even if no new changes'
         )
+        booleanParam(
+            name: 'REMOVE_ALL_NGINX',
+            defaultValue: false,
+            description: 'Force remove all nginx on build and replace enable sites only'
+        )
         string(
             name: 'MAX_PARALLEL',
             defaultValue: '4',
@@ -329,15 +334,18 @@ pipeline {
                         return
                     }
                     
-                    vpsInfos.values().each { vpsConf -> 
-                        sshagent(credentials: [vpsConf.vpsCredId]) {
-                            sh """
-                                ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
+                    if (params.REMOVE_ALL_NGINX ) {
+                        echo "⏭️ Remove all sites before place new enable sites."
+                        vpsInfos.values().each { vpsConf -> 
+                            sshagent(credentials: [vpsConf.vpsCredId]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
 
-                                    sudo rm -f /etc/nginx/sites-enabled/*
-                                    
-                                "
-                            """
+                                        sudo rm -f /etc/nginx/sites-enabled/*
+                                        
+                                    "
+                                """
+                            }
                         }
                     }
 

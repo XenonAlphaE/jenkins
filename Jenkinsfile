@@ -246,7 +246,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelTasks, 3)  // 👈 cap parallelism
 
                     if (redisState.getMissingCerts()) {
                         echo "⚠️  Some certificates are missing: ${redisState.getMissingCerts()}"
@@ -312,7 +312,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelTasks, 3)  // 👈 cap parallelism
 
                 }
             }
@@ -349,7 +349,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelTasks, 3)  // 👈 cap parallelism
 
                     vpsInfos.values().each { vpsConf -> 
                         sshagent(credentials: [vpsConf.vpsCredId]) {

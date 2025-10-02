@@ -18,7 +18,6 @@ pipeline {
 
     environment {
         // 👇 Tell Jenkins to use DinD instead of host socket
-        DOCKER_HOST = "tcp://dind:2375"
         DOCKER_BUILDKIT = "1"      // Enable BuildKit (faster, modern builds)
     }
 
@@ -40,6 +39,13 @@ pipeline {
     }
 
     stages {
+        stage('Prepare Environment') {
+            steps {
+                // Ensure the required Docker client is accessible
+                sh 'docker version'
+            }
+        }
+
         stage('Clear redis') {
             steps {
                 script {

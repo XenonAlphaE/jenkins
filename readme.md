@@ -100,3 +100,13 @@ redundant.each { cert ->
 
 ======== docker compose =============
 docker-compose up -d
+
+
+# docker inside docker #
+curl http://dind:2375/version
+ping dind
+echo $DOCKER_HOST
+
+
+environment:
+  - DOCKER_HOST=tcp://dind:2375

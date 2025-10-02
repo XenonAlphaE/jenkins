@@ -16,13 +16,14 @@ services:
     restart: unless-stopped
 
   dind:
-    image: docker:27.1-dind  # ✅ modern DinD with buildx + --platform support
-    container_name: jenkins-dind
-    privileged: true                  # 👈 required for DinD
+    image: docker:27.1-dind
+    privileged: true
     networks:
       - jenkins_net
+    command: --tls=false --experimental
     environment:
-      DOCKER_TLS_CERTDIR: ""          # disable TLS (simpler for local)
+      - DOCKER_BUILDKIT=1
+      - DOCKER_TLS_CERTDIR=""          # disable TLS (simpler for local)
     volumes:
       - dind_storage:/var/lib/docker  # keep DinD images/cache across restarts
     restart: unless-stopped

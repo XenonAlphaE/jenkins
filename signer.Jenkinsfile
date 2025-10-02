@@ -51,7 +51,7 @@ pipeline {
         stage('Load Script') {
             steps {
                 script {
-                    repos = load "${env.WORKSPACE}/gitRepos/priceSignature.groovy"
+                    repos = load "gitRepos/priceSignature.groovy"
                     vpsInfos = load 'vps.groovy'
 
                 }

@@ -18,7 +18,7 @@ pipeline {
 
     environment {
         // 👇 Tell Jenkins to use DinD instead of host socket
-        DOCKER_HOST = "tcp://jenkins-dind:2375"
+        DOCKER_HOST = "tcp://dind:2375"
         DOCKER_BUILDKIT = "1"      // Enable BuildKit (faster, modern builds)
     }
 

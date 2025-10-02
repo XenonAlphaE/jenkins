@@ -27,6 +27,14 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '100'))
     }
 
+    parameters {
+        booleanParam(
+            name: 'FORCE_BUILD_ALL',
+            defaultValue: false,
+            description: 'Force build & deploy all repos, even if no new changes'
+        )
+    }
+
     triggers {
         cron('0,30 * * * *')
     }

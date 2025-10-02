@@ -5,6 +5,7 @@ return [
         folder: 'pricesignature',
         credId: 'id_ed25519_xenonalphae',
         imageName: 'pricesignatureapi',
+        imagePort: 7001,
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
         ghcrCreds:'',
         envs: [

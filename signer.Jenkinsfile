@@ -216,9 +216,56 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelBuilds, 3)
+                    runWithMaxParallel(parallelBuilds, 1) // single agent to push at time 
                 }
             }
         }
+
+        stage('Refresh image docker vps') {
+            when {
+                expression { params.FORCE_BUILD_ALL || !(redisState.getChangedRepos() as List).isEmpty() }
+            }
+            steps {
+                script {
+                    def reposToCheck = params.FORCE_BUILD_ALL ? repos : repos.findAll { r -> (redisState.getChangedRepos() as List).contains(r.folder) }
+                    def parallelTasks = [:]
+
+                    reposToCheck.each { repo ->
+                        parallelTasks["refresh-${repo.folder}"] ={
+
+                            withCredentials([usernamePassword(
+                                credentialsId: 'ghcrCreds',
+                                usernameVariable: 'GHCR_USER',
+                                passwordVariable: 'GHCR_PAT'
+                            )]) {
+
+                                def vpsInfo = vpsInfos[repo.vpsRef]
+                                sshagent (credentials: [vpsInfo.vpsCredId]) {
+                                    sh """
+                                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} << 'EOF'
+                                            docker stop ${repo.imageName} || true
+                                            docker rm ${repo.imageName} || true
+                                            docker pull ghcr.io/$GHCR_USER/${repo.imageName}
+                                            docker run -d \
+                                            --name ${repo.imageName} \
+                                            --restart unless-stopped \
+                                            -p ${repo.imagePort}:${repo.imagePort} \
+                                            -v /home/ubuntu/signer/keys:/usr/src/app/keys \
+                                            ghcr.io/$GHCR_USER/${repo.imageName}:latest
+                                            sudo systemctl reload nginx
+                                        EOF
+                                    """
+
+                                }
+                            }
+                        }
+                    }
+
+                    runWithMaxParallel(parallelTasks, 1)
+
+                }
+            }
+        }
+
     }
 }

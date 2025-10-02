@@ -193,8 +193,6 @@ pipeline {
                                     sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
                                         
-                                        docker buildx create --use --driver docker-container dind-builder tcp://dind:2375
-                                        docker buildx inspect --bootstrap
 
                                         docker buildx build --platform linux/amd64,linux/arm64 \
                                           -t ghcr.io/\$GHCR_USER/${repo.imageName}:latest \

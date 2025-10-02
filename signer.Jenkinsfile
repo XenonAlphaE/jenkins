@@ -191,8 +191,7 @@ pipeline {
                                     passwordVariable: 'GHCR_PAT'
                                 )]) {
                                     sh """
-                                        docker context create builders || true
-                                        docker buildx create --name mybuilder --driver docker-container --use || true
+                                        docker buildx create --use --driver docker-container mybuilder || true
                                         docker buildx inspect --bootstrap
                                     """
 

@@ -191,6 +191,12 @@ pipeline {
                                     passwordVariable: 'GHCR_PAT'
                                 )]) {
                                     sh """
+                                        docker context create builders || true
+                                        docker buildx create --name mybuilder --driver docker-container --use || true
+                                        docker buildx inspect --bootstrap
+                                    """
+
+                                    sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
                                         docker buildx build --platform linux/amd64,linux/arm64 \
                                           -t ghcr.io/\$GHCR_USER/${repo.imageName}:latest \

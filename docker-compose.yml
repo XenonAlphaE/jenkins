@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   dind:
-    image: docker:24-dind
+    image: docker:27.1-dind  # ✅ modern DinD with buildx + --platform support
     container_name: jenkins-dind
     privileged: true                  # 👈 required for DinD
     networks:

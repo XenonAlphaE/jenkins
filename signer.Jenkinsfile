@@ -241,20 +241,20 @@ pipeline {
 
                                 def vpsInfo = vpsInfos[repo.vpsRef]
                                 sshagent (credentials: [vpsInfo.vpsCredId]) {
-                                    sh """
-                                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} << 'EOF'
-                                            docker stop ${repo.imageName} || true
-                                            docker rm ${repo.imageName} || true
-                                            docker pull ghcr.io/$GHCR_USER/${repo.imageName}
-                                            docker run -d \
-                                            --name ${repo.imageName} \
-                                            --restart unless-stopped \
-                                            -p ${repo.imagePort}:${repo.imagePort} \
-                                            -v /home/ubuntu/signer/keys:/usr/src/app/keys \
-                                            ghcr.io/$GHCR_USER/${repo.imageName}:latest
-                                            sudo systemctl reload nginx
-                                        EOF
-                                    """
+sh """
+ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
+  docker stop ${repo.imageName} || true
+  docker rm ${repo.imageName} || true
+  docker pull ghcr.io/$GHCR_USER/${repo.imageName}:latest
+  docker run -d \\
+    --name ${repo.imageName} \\
+    --restart unless-stopped \\
+    -p ${repo.port}:${repo.port} \\
+    -v /home/ubuntu/signer/keys:/usr/src/app/keys \\
+    ghcr.io/$GHCR_USER/${repo.imageName}:latest
+  sudo systemctl reload nginx
+EOF
+"""
 
                                 }
                             }

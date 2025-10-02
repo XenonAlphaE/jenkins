@@ -123,7 +123,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelTasks, 3)  // 👈 cap parallelism
                     
                     def changedRepos = redisState.getChangedRepos() as List
 
@@ -210,7 +210,7 @@ pipeline {
                         }
                     }
 
-                    runWithMaxParallel(parallelBuilds, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
+                    runWithMaxParallel(parallelBuilds, 3)  // 👈 cap parallelism
                 }
             }
         }

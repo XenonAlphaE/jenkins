@@ -17,6 +17,8 @@ services:
 
   dind:
     image: docker:27.1-dind
+    container_name: dind
+
     privileged: true
     networks:
       - jenkins_net

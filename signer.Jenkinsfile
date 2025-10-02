@@ -18,7 +18,7 @@ pipeline {
 
     environment {
         // 👇 Tell Jenkins to use DinD instead of host socket
-        DOCKER_HOST = "tcp://dind:2375"
+        DOCKER_HOST = "tcp://jenkins-dind:2375"
         DOCKER_BUILDKIT = "1"      // Enable BuildKit (faster, modern builds)
     }
 
@@ -192,6 +192,10 @@ pipeline {
                                 )]) {
                                     sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
+                                        
+                                        docker buildx create --use --driver docker-container dind-builder tcp://dind:2375
+                                        docker buildx inspect --bootstrap
+
                                         docker buildx build --platform linux/amd64,linux/arm64 \
                                           -t ghcr.io/\$GHCR_USER/${repo.imageName}:latest \
                                           --push .

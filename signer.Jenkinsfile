@@ -39,7 +39,7 @@ pipeline {
     }
 
     stages {
-        stage('Prepare Environment') {
+        stage('Check Docker Environment') {
             steps {
                 // Ensure the required Docker client is accessible
                 sh 'docker version'
@@ -184,8 +184,8 @@ pipeline {
                     def parallelBuilds = [:]
 
                     repos.each { repo ->
-                        repo.envs.each { envConf ->
-                            parallelBuilds["build-${envConf.name}"] = {
+                        parallelBuilds["build-image-${repo.folder}"] = {
+                            dir(repo.folder) {
                                 if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
                                     echo "⏭️ Skipping ${repo.folder}, no changes"
                                     return
@@ -198,11 +198,18 @@ pipeline {
                                 )]) {
                                     sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
-                                        
+                                    """
 
-                                        docker buildx build --platform linux/amd64,linux/arm64 \
-                                          -t ghcr.io/\$GHCR_USER/${repo.imageName}:latest \
-                                          --push .
+                                    // build per arch
+                                    sh "docker buildx build --platform linux/amd64 -t ghcr.io/$GHCR_USER/${repo.imageName}:amd64 . --push"
+                                    sh "docker buildx build --platform linux/arm64 -t ghcr.io/$GHCR_USER/${repo.imageName}:arm64 . --push"
+
+                                    // create and push manifest
+                                    sh """
+                                        docker manifest create ghcr.io/$GHCR_USER/${repo.imageName}:latest \
+                                            --amend ghcr.io/$GHCR_USER/${repo.imageName}:amd64 \
+                                            --amend ghcr.io/$GHCR_USER/${repo.imageName}:arm64 || true
+                                        docker manifest push ghcr.io/$GHCR_USER/${repo.imageName}:latest || true
                                     """
                                 }
                             }

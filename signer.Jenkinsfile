@@ -249,7 +249,7 @@ ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
   docker run -d \\
     --name ${repo.imageName} \\
     --restart unless-stopped \\
-    -p ${repo.imagePor}:${repo.imagePor} \\
+    -p ${repo.imagePort}:${repo.imagePort} \\
     -v /home/ubuntu/signer/keys:/usr/src/app/keys \\
     ghcr.io/$GHCR_USER/${repo.imageName}:latest
   sudo systemctl reload nginx

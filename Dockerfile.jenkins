@@ -1,10 +1,23 @@
 FROM jenkins/jenkins:lts
-USER root
-RUN apt-get update && apt-get install -y dnsutils
-RUN apt-get update && apt-get install -y python3 build-essential
 
-RUN apt-get update && apt-get install -y redis-tools
-RUN apt-get update && apt-get install -y rsync
-RUN apt-get update && apt-get install -y docker.io
+USER root
+
+# Install required tools in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    dnsutils \
+    python3 \
+    build-essential \
+    redis-tools \
+    rsync \
+    curl \
+    gnupg \
+    lsb-release \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI only (not the daemon)
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list \
+ && apt-get update && apt-get install -y --no-install-recommends docker-ce-cli \
+ && rm -rf /var/lib/apt/lists/*
 
 USER jenkins

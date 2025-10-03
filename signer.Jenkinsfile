@@ -197,6 +197,10 @@ pipeline {
                                     passwordVariable: 'GHCR_PAT'
                                 )]) {
                                     sh """
+                                        ls -la
+                                    """
+
+                                    sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
                                     """
 

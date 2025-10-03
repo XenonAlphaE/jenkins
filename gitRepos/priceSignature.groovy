@@ -7,7 +7,6 @@ return [
         imageName: 'pricesignatureapi',
         imagePort: 7001,
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
-        ghcrCreds:'',
         envs: [
             [ 
                 MAIN_DOMAIN:'https://btcsymbol.net/',

@@ -199,7 +199,7 @@ pipeline {
                                     passwordVariable: 'GHCR_PAT'
                                 )]) {
                                     sh """
-                                        ls -la
+                                        tree -a -L 2 || find . -mindepth 2 -type f
                                     """
 
                                     sh """

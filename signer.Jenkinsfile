@@ -205,8 +205,8 @@ pipeline {
                                     """
 
                                     // build per arch
-                                    sh "docker buildx build --no-cache  --platform linux/amd64 -t ghcr.io/$GHCR_USER/${repo.imageName}:amd64 . --push"
-                                    sh "docker buildx build --no-cache  --platform linux/arm64 -t ghcr.io/$GHCR_USER/${repo.imageName}:arm64 . --push"
+                                    sh "docker buildx build --no-cache --pull --platform linux/amd64 -t ghcr.io/$GHCR_USER/${repo.imageName}:amd64 . --push"
+                                    sh "docker buildx build --no-cache --pull --platform linux/arm64 -t ghcr.io/$GHCR_USER/${repo.imageName}:arm64 . --push"
 
                                     // create and push manifest
                                     sh """

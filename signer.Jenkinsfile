@@ -190,6 +190,8 @@ pipeline {
                                     echo "⏭️ Skipping ${repo.folder}, no changes"
                                     return
                                 }
+                                def commitHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                                def imageTag = "${repo.imageName}:${commitHash}"
 
                                 withCredentials([usernamePassword(
                                     credentialsId: 'ghcrCreds',
@@ -203,16 +205,17 @@ pipeline {
                                     sh """
                                         echo \$GHCR_PAT | docker login ghcr.io -u \$GHCR_USER --password-stdin
                                     """
+                                    sh "docker buildx prune -f " // optional, clears local cache
 
                                     // build per arch
-                                    sh "docker buildx build --no-cache --pull --platform linux/amd64 -t ghcr.io/$GHCR_USER/${repo.imageName}:amd64 . --push"
-                                    sh "docker buildx build --no-cache --pull --platform linux/arm64 -t ghcr.io/$GHCR_USER/${repo.imageName}:arm64 . --push"
+                                    sh "docker buildx build --no-cache --pull --platform linux/amd64 -t ghcr.io/$GHCR_USER/${imageTag}-amd64 . --push"
+                                    sh "docker buildx build --no-cache --pull --platform linux/arm64 -t ghcr.io/$GHCR_USER/${imageTag}-arm64 . --push"
 
                                     // create and push manifest
                                     sh """
                                         docker manifest create ghcr.io/$GHCR_USER/${repo.imageName}:latest \
-                                            --amend ghcr.io/$GHCR_USER/${repo.imageName}:amd64 \
-                                            --amend ghcr.io/$GHCR_USER/${repo.imageName}:arm64 || true
+                                            --amend ghcr.io/$GHCR_USER/${imageTag}-amd64 \
+                                            --amend ghcr.io/$GHCR_USER/${imageTag}-arm64 || true
                                         docker manifest push ghcr.io/$GHCR_USER/${repo.imageName}:latest || true
                                     """
                                 }

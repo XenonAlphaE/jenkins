@@ -260,6 +260,7 @@ ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
     -p ${repo.imagePort}:${repo.imagePort} \\
     -v /home/ubuntu/signer/keys:/usr/src/app/keys \\
     ghcr.io/$GHCR_USER/${repo.imageName}:latest
+  sudo nginx -t &&
   sudo systemctl reload nginx
 EOF
 """

@@ -213,10 +213,10 @@ pipeline {
 
                                     // create and push manifest
                                     sh """
-                                        docker manifest create ghcr.io/$GHCR_USER/${repo.imageName}:latest \
+                                        docker manifest create ghcr.io/$GHCR_USER/${imageTag} \
                                             --amend ghcr.io/$GHCR_USER/${imageTag}-amd64 \
                                             --amend ghcr.io/$GHCR_USER/${imageTag}-arm64 || true
-                                        docker manifest push ghcr.io/$GHCR_USER/${repo.imageName}:latest || true
+                                        docker manifest push ghcr.io/$GHCR_USER/${imageTag} || true
                                     """
                                 }
                             }
@@ -245,6 +245,8 @@ pipeline {
                                 usernameVariable: 'GHCR_USER',
                                 passwordVariable: 'GHCR_PAT'
                             )]) {
+                                def commitHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                                def imageTag = "${repo.imageName}:${commitHash}"
 
                                 def vpsInfo = vpsInfos[repo.vpsRef]
                                 sshagent (credentials: [vpsInfo.vpsCredId]) {
@@ -252,14 +254,13 @@ sh """
 ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
   docker stop ${repo.imageName} || true
   docker rm ${repo.imageName} || true
-  docker rmi ghcr.io/$GHCR_USER/${repo.imageName} || true
-  docker pull ghcr.io/$GHCR_USER/${repo.imageName}:latest
+  docker pull ghcr.io/$GHCR_USER/${imageTag}
   docker run -d \\
     --name ${repo.imageName} \\
     --restart unless-stopped \\
     -p ${repo.imagePort}:${repo.imagePort} \\
     -v /home/ubuntu/signer/keys:/usr/src/app/keys \\
-    ghcr.io/$GHCR_USER/${repo.imageName}:latest
+    ghcr.io/$GHCR_USER/${imageTag}
   sudo nginx -t &&
   sudo systemctl reload nginx
 EOF

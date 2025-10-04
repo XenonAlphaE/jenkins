@@ -239,35 +239,38 @@ pipeline {
 
                     reposToCheck.each { repo ->
                         parallelTasks["refresh-${repo.folder}"] ={
+                            dir(repo.folder) {
 
-                            withCredentials([usernamePassword(
-                                credentialsId: 'ghcrCreds',
-                                usernameVariable: 'GHCR_USER',
-                                passwordVariable: 'GHCR_PAT'
-                            )]) {
-                                def commitHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                                def imageTag = "${repo.imageName}:${commitHash}"
+                                withCredentials([usernamePassword(
+                                    credentialsId: 'ghcrCreds',
+                                    usernameVariable: 'GHCR_USER',
+                                    passwordVariable: 'GHCR_PAT'
+                                )]) {
+                                    def commitHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                                    def imageTag = "${repo.imageName}:${commitHash}"
 
-                                def vpsInfo = vpsInfos[repo.vpsRef]
-                                sshagent (credentials: [vpsInfo.vpsCredId]) {
+                                    def vpsInfo = vpsInfos[repo.vpsRef]
+                                    sshagent (credentials: [vpsInfo.vpsCredId]) {
 sh """
 ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
-  docker stop ${repo.imageName} || true
-  docker rm ${repo.imageName} || true
-  docker pull ghcr.io/$GHCR_USER/${imageTag}
-  docker run -d \\
+docker stop ${repo.imageName} || true
+docker rm ${repo.imageName} || true
+docker pull ghcr.io/$GHCR_USER/${imageTag}
+docker run -d \\
     --name ${repo.imageName} \\
     --restart unless-stopped \\
     -p ${repo.imagePort}:${repo.imagePort} \\
     -v /home/ubuntu/signer/keys:/usr/src/app/keys \\
     ghcr.io/$GHCR_USER/${imageTag}
-  sudo nginx -t &&
-  sudo systemctl reload nginx
+sudo nginx -t &&
+sudo systemctl reload nginx
 EOF
 """
 
+                                    }
                                 }
                             }
+
                         }
                     }
 

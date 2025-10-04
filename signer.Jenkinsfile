@@ -252,6 +252,7 @@ sh """
 ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} <<EOF
   docker stop ${repo.imageName} || true
   docker rm ${repo.imageName} || true
+  docker rmi ${repo.imageName} || true
   docker pull ghcr.io/$GHCR_USER/${repo.imageName}:latest
   docker run -d \\
     --name ${repo.imageName} \\

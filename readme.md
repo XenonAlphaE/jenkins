@@ -111,3 +111,8 @@ echo $DOCKER_HOST
 
 environment:
   - DOCKER_HOST=tcp://dind:2375
+
+
+# certbot debug #
+sudo tail -f /var/log/nginx/access.log // ensure requst challange come to nginx server
+<cmd certbot >

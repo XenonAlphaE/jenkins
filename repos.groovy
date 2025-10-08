@@ -5,6 +5,7 @@ repos += load "${env.WORKSPACE}/gitRepos/hyper.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/subbd.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/bull.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/wepe.groovy"
+repos += load "${env.WORKSPACE}/gitRepos/lilpepe.groovy"
 
 
 return repos.collect { repo ->

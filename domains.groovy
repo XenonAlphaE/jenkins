@@ -5,6 +5,7 @@ repos += load "${env.WORKSPACE}/gitRepos/priceSignature.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/subbd.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/bull.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/wepe.groovy"
+repos += load "${env.WORKSPACE}/gitRepos/lilpepe.groovy"
 
 // Extract only MAIN_DOMAIN + vpsRef
 def repoDomains = repos.collectMany { repo ->

@@ -129,4 +129,42 @@ sudo tail -f /var/log/nginx/access.log # ensure requst challange come to nginx s
 <cmd certbot >
  sudo certbot certonly --webroot -w /var/www/presale/supepe_com -d supepe.com -d www.supepe.com -v  --agree-tos   --email contact@supepe.com  --non-interactive
 
+ sudo certbot certonly --staging  --webroot -w /var/www/presale/supepe_com -d supepe.com -d www.supepe.com -v  --agree-tos   --email contact@supepe.com  --non-interactive
+
+
  ✅ Check letsdebug.net/supepe.com — it tells you which validation node failed.
+ curl --data '{"method":"http-01","domain":"supepe.com"}' -H 'content-type: application/json' https://letsdebug.net
+ curl -H 'accept: application/json' https://letsdebug.net/supepe.com/2584971
+
+
+
+ # cloudfare config #
+sudo mkdir -p /etc/ssl/cloudflare && sudo chown ubuntu:ubuntu /etc/ssl/cloudflare
+
+
+
+scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.crt ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com.crt
+scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.key ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com.key
+
+
+echo "hello-test" | sudo tee /var/www/presale/supepe_com/index.html
+
+sudo chmod 600 /etc/ssl/cloudflare/supepe.com.crt
+sudo chmod 600 /etc/ssl/cloudflare/supepe.com.key
+
+
+scp -o StrictHostKeyChecking=no /Users/steve/Coding/jenkins_xenon/supepe/supepe_com.conf ubuntu@165.154.235.179:/home/ubuntu/supepe_com.conf
+
+
+sudo mv /home/ubuntu/supepe_com.conf /etc/nginx/sites-available/supepe_com.conf &&
+sudo chown root:root /etc/nginx/sites-available/supepe_com.conf &&
+sudo ln -sf /etc/nginx/sites-available/supepe_com.conf /etc/nginx/sites-enabled/supepe_com.conf
+
+
+sudo nginx -t -v &&
+sudo systemctl reload nginx
+
+sudo grep -R "server_name" /etc/nginx/sites-enabled /etc/nginx/conf.d /etc/nginx/sites-available | grep -E "supepe\.com"
+sudo nginx -T | grep "server_name"
+sudo nginx -T | grep -B2 "server_name" | grep supepe.com
+

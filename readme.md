@@ -114,5 +114,19 @@ environment:
 
 
 # certbot debug #
-sudo tail -f /var/log/nginx/access.log // ensure requst challange come to nginx server
+ssh -i keys/xeon_vps1.pem ubuntu@165.154.235.179
+
+
+sudo mkdir -p /var/www/presale/supepe_com/.well-known/acme-challenge
+echo "hello-test" | sudo tee /var/www/presale/supepe_com/.well-known/acme-challenge/test.txt
+sudo chown -R www-data:www-data /var/www/presale/supepe_com
+sudo nginx -t && sudo systemctl reload nginx
+
+curl -v http://supepe.com/.well-known/acme-challenge/test.txt
+
+
+sudo tail -f /var/log/nginx/access.log # ensure requst challange come to nginx server
 <cmd certbot >
+ sudo certbot certonly --webroot -w /var/www/presale/supepe_com -d supepe.com -d www.supepe.com -v  --agree-tos   --email contact@supepe.com  --non-interactive
+
+ ✅ Check letsdebug.net/supepe.com — it tells you which validation node failed.

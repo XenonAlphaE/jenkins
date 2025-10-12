@@ -45,7 +45,7 @@ private def copyCertFromCloudflare(domainInfo, vpsInfos) {
 private def genrateCertbot(domainInfo, vpsInfos) {
     def vpsInfo = vpsInfos[domainInfo.vpsRef]
     def domain = normalizeDomain(domainInfo.MAIN_DOMAIN)
-    def certbotTemplate = readFile('ngnix/https.template.conf')
+    def certbotTemplate = readFile('nginx/https.template.conf')
 
     sshagent (credentials: [vpsInfo.vpsCredId]) {
 

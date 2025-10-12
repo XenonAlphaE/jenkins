@@ -9,7 +9,7 @@ def generate(repo, envConf, vpsInfos) {
 }
 
 private def generateNextjs(repo, envConf, vpsInfos) {
-    def ngnixTemplate = readFile('ngnix/https.template.conf')
+    def ngnixTemplate = readFile('nginx/https.template.conf')
     if (repo.ssl?.toLowerCase() == 'cloudflare') {
         nginxTemplate = readFile('nginx/https.cloudflare.conf')
     }

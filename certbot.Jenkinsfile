@@ -1,3 +1,6 @@
+// This annotation tells Jenkins to load the library you configured
+@Library('my-shared-library') _ 
+
 pipeline {
     agent any
     triggers {

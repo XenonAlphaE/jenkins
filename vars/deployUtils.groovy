@@ -39,19 +39,6 @@ private def deployNextjs(repo, envConf, vpsInfos) {
     }
 }
 
-private def deployDocker(repo, envConf, vpsInfo) {
-    echo "🚀 Deploying Docker ${repo.folder}/${envConf.name} to ${vpsInfo.vpsHost}"
-
-    sshagent (credentials: [vpsInfo.vpsCredId]) {
-        sh """
-            ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
-                docker stop ${repo.folder}-${envConf.name} || true &&
-                docker rm ${repo.folder}-${envConf.name} || true &&
-                docker run -d --name ${repo.folder}-${envConf.name} -p 80:80 ${repo.folder}:${envConf.name}
-            "
-        """
-    }
-}
 
 // Only export `deploy` helper
 return [ deploy: this.&deploy ]

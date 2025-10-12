@@ -235,7 +235,7 @@ pipeline {
                                         script: """
 
                                             ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \
-                                            "sudo test -f /etc/letsencrypt/live/${domain}/fullchain.pem && echo yes || echo no"
+                                            "if sudo test -f /etc/letsencrypt/live/${domain}/fullchain.pem || sudo test -f /etc/ssl/cloudflare/${domain}/${domain}.crt; then echo yes; else echo no; fi"
                                         """,
                                         returnStdout: true
                                     ).trim()

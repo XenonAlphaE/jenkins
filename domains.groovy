@@ -20,7 +20,8 @@ def repoDomains = repos.collectMany { repo ->
         return [
             "MAIN_DOMAIN" : env.MAIN_DOMAIN,
             "vpsRef" : repo.vpsRef,
-            "name": formatedDomain
+            "name": formatedDomain,
+            "ssl": repo.ssl
         ]
     }
 }

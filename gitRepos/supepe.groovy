@@ -7,7 +7,7 @@ return [
         credId: 'id_ed25519_xenonalphae',
         buildType: 'nextjs',
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
-
+        ssl : 'cloudfare',
         envs: [
             [ 
                 MAIN_DOMAIN:'https://supepe.com/',

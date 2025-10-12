@@ -143,14 +143,14 @@ sudo mkdir -p /etc/ssl/cloudflare && sudo chown ubuntu:ubuntu /etc/ssl/cloudflar
 
 
 
-scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.crt ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com.crt
-scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.key ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com.key
+scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.crt ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com/supepe.com.crt
+scp -o StrictHostKeyChecking=no  /Users/steve/Coding/jenkins_xenon/supepe/supepe.com.key ubuntu@165.154.235.179:/etc/ssl/cloudflare/supepe.com/supepe.com.key
 
 
 echo "hello-test" | sudo tee /var/www/presale/supepe_com/index.html
 
-sudo chmod 600 /etc/ssl/cloudflare/supepe.com.crt
-sudo chmod 600 /etc/ssl/cloudflare/supepe.com.key
+sudo chmod 600 /etc/ssl/cloudflare/supepe.com/supepe.com.crt
+sudo chmod 600 /etc/ssl/cloudflare/supepe.com/supepe.com.key
 
 
 scp -o StrictHostKeyChecking=no /Users/steve/Coding/jenkins_xenon/supepe/supepe_com.conf ubuntu@165.154.235.179:/home/ubuntu/supepe_com.conf

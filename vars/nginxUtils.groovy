@@ -63,26 +63,5 @@ private def generateNextjs(repo, envConf, vpsInfos) {
 
 }
 
-private def generateDocker(repo, envConf, vpsInfo, domain, nginxTemplate) {
-    def tmpConfigFile = "${envConf.name}.conf"
-    def nginxConfig = nginxTemplate
-        .replace('{{DOMAIN}}', domain)
-        .replace('{{ENV_NAME}}', envConf.name)
-        .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
-
-    writeFile(file: tmpConfigFile, text: nginxConfig)
-    echo "✅ Generated Nginx config for Docker ${envConf.name}: ${tmpConfigFile}"
-
-    sshagent(credentials: [vpsInfo.vpsCredId]) {
-        sh """
-            scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
-            ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
-                sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
-                sudo ln -sf /etc/nginx/sites-available/${tmpConfigFile} /etc/nginx/sites-enabled/${tmpConfigFile}
-            "
-        """
-    }
-}
-
 
 return [ generate: this.&generate ]

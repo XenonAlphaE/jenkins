@@ -80,12 +80,12 @@ pipeline {
                             def redundant = existingCerts.findAll { !domains.contains(it) }
                             if (redundant) {
                                 echo "🗑️ Removing redundant certs on ${vpsInfo.vpsHost}: ${redundant}"
-                                redundant.each { cert ->
-                                    sh """
-                                        ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \\
-                                        "sudo certbot delete --cert-name ${cert} --non-interactive --quiet || true"
-                                    """
-                                }
+                                // redundant.each { cert ->
+                                //     sh """
+                                //         ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} \\
+                                //         "sudo certbot delete --cert-name ${cert} --non-interactive --quiet || true"
+                                //     """
+                                // }
 
                             } else {
                                 echo "✨ No redundant certs to remove on ${vpsInfo.vpsHost}"

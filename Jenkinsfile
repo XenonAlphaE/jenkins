@@ -262,6 +262,57 @@ pipeline {
             }
         }
 
+        stage('Generate NGNIX config and deploy SSH') {
+            steps {
+                script {
+                    def changedRepos = redisState.getChangedRepos()
+                    def parallelTasks = [:]
+
+                    if (!params.FORCE_BUILD_ALL && !changedRepos) {
+                        echo "⏭️ Skipping nginx reload, no changes detected"
+                        return
+                    }
+                    
+                    if (params.REMOVE_ALL_NGINX ) {
+                        echo "⏭️ Remove all sites before place new enable sites."
+                        vpsInfos.values().each { vpsConf -> 
+                            sshagent(credentials: [vpsConf.vpsCredId]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
+
+                                        sudo rm -f /etc/nginx/sites-enabled/*
+                                        
+                                    "
+                                """
+                            }
+                        }
+                    }
+
+                    repos.each { repo ->
+                        repo.envs.each { envConf ->
+                            parallelTasks["nginx-${envConf.name}"] = {
+                                nginxUtils.generate(repo, envConf, vpsInfos )
+                            }
+                        }
+                    }
+
+                    runWithMaxParallel(parallelTasks, 3)  // 👈 cap parallelism
+
+                    vpsInfos.values().each { vpsConf -> 
+                        sshagent(credentials: [vpsConf.vpsCredId]) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
+
+                                    sudo nginx -t &&
+
+                                    sudo systemctl reload nginx
+                                "
+                            """
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Build Projects') {
             steps {

@@ -138,7 +138,7 @@ sudo tail -f /var/log/nginx/access.log # ensure requst challange come to nginx s
 
 
 
- # cloudfare config #
+ # cloudflare config #
 sudo mkdir -p /etc/ssl/cloudflare && sudo chown ubuntu:ubuntu /etc/ssl/cloudflare
 
 

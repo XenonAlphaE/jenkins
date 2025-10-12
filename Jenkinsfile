@@ -262,7 +262,7 @@ pipeline {
             }
         }
 
-        stage('Generate NGNIX config and deploy SSH') {
+        stage('Check Generate NGNIX config and deploy SSH') {
             steps {
                 script {
                     def changedRepos = redisState.getChangedRepos()

@@ -1,4 +1,4 @@
-def generateCert(domainInfo, envConf, vpsInfos) {
+def generateCert(domainInfo, vpsInfos) {
     if (domainInfo.ssl == "cloudfare") {
         copyCertFromCloudfare(domainInfo, envConf, vpsInfos)
     } else {
@@ -9,7 +9,7 @@ def generateCert(domainInfo, envConf, vpsInfos) {
 //
 // 🔹 Copy existing Cloudflare-origin certificates into VPS
 //
-private def copyCertFromCloudfare(domainInfo, envConf, vpsInfos) {
+private def copyCertFromCloudfare(domainInfo, vpsInfos) {
     def vpsInfo = vpsInfos[domainInfo.vpsRef]
     def domain = normalizeDomain(domainInfo.MAIN_DOMAIN)
     def certBasePath = "${env.WORKSPACE}/claufare_ssl"

@@ -9,11 +9,11 @@ def generate(repo, envConf, vpsInfos) {
 }
 
 private def generateNextjs(repo, envConf, vpsInfos) {
-    def ngnixTemplate = readFile('nginx/https.template.conf')
+    def nginxTemplate = readFile('nginx/https.template.conf')
     if (repo.ssl?.toLowerCase() == 'cloudflare') {
         nginxTemplate = readFile('nginx/https.cloudflare.conf')
     }
-
+     
     def vpsInfo = vpsInfos[repo.vpsRef]
     dir(repo.folder) {
         def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
@@ -24,7 +24,7 @@ private def generateNextjs(repo, envConf, vpsInfos) {
         }
 
         def tmpConfigFile = "${envConf.name}.conf"
-        def nginxConfig = ngnixTemplate
+        def nginxConfig = nginxTemplate
             .replace('{{DOMAIN}}', domain)
             .replace('{{ENV_NAME}}', envConf.name)
             .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)

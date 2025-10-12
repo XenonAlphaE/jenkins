@@ -1,8 +1,8 @@
 def generateCert(domainInfo, vpsInfos) {
     if (domainInfo.ssl == "cloudfare") {
-        copyCertFromCloudfare(domainInfo, envConf, vpsInfos)
+        copyCertFromCloudfare(domainInfo, vpsInfos)
     } else {
-        genrateCertbot(domainInfo, envConf, vpsInfos)
+        genrateCertbot(domainInfo, vpsInfos)
     }
 }
 
@@ -24,7 +24,6 @@ private def copyCertFromCloudfare(domainInfo, vpsInfos) {
             '
         """
 
-        // Upload cert & key (assumes files exist in Jenkins workspace or envConf)
         sh """
             scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.crt ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/ &&
             scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.key ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/ &&
@@ -46,6 +45,7 @@ private def copyCertFromCloudfare(domainInfo, vpsInfos) {
 private def genrateCertbot(domainInfo, vpsInfos) {
     def vpsInfo = vpsInfos[domainInfo.vpsRef]
     def domain = normalizeDomain(domainInfo.MAIN_DOMAIN)
+    def certbotTemplate = readFile('ngnix/https.template.conf')
 
     sshagent (credentials: [vpsInfo.vpsCredId]) {
 
@@ -78,11 +78,11 @@ private def genrateCertbot(domainInfo, vpsInfos) {
         }
 
         def tmpConfigFile = "${domainInfo.name}.conf"
-
-        def nginxConfig = envConf.certbotTemplate
+        def nginxConfig = certbotTemplate
             .replace('{{DOMAIN}}', domain)
             .replace('{{ENV_NAME}}', domainInfo.name)
             .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
+
 
         writeFile(file: tmpConfigFile, text: nginxConfig)
         echo "✅ Generated Nginx config for ${domainInfo.name}: ${tmpConfigFile}"

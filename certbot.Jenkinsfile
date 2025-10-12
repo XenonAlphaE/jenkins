@@ -20,8 +20,6 @@ pipeline {
                 script {
                     repos = load 'domains.groovy'
                     vpsInfos = load 'vps.groovy'
-
-                    certbotTemplate = readFile('ngnix/http.template.conf')
                 }
             }
         }

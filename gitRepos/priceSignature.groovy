@@ -12,7 +12,7 @@ return [
             [ 
                 MAIN_DOMAIN:'https://btcsymbol.net/',
                 MAIN_SITENAME:'btcsymbol',
-                proxyPort: 7001,
+                proxyPort: '7001',
 
             ],
             

@@ -329,15 +329,17 @@ pipeline {
             steps {
                 script {
                     def jobName = env.JOB_NAME ?: "default-job"
-                    def build = env.BUILD_NUMBER ?: "0"
-
-                    build job: 'xenon-nginx-manager',
-                        parameters: [
-                            string(name: 'PARENT_BUILD', value: "jenkins:${jobName}:${build}"),
-                            booleanParam(name: 'FORCE_BUILD_ALL', value: params.FORCE_BUILD_ALL),
-                            booleanParam(name: 'REMOVE_ALL_NGINX', value: params.REMOVE_ALL_NGINX),
-                        ]
-
+                    def buildNumer = env.BUILD_NUMBER ?: "0"
+                    build(
+                            job: 'xenon-nginx-manager',   // 👈 exact name of the other pipeline
+                            parameters: [
+                                string(name: 'PARENT_BUILD', value: "jenkins:${jobName}:${buildNumer}"),
+                                booleanParam(name: 'FORCE_BUILD_ALL', value: params.FORCE_BUILD_ALL),
+                                booleanParam(name: 'REMOVE_ALL_NGINX', value: params.REMOVE_ALL_NGINX),
+                            ],
+                            propagate: true,   // fail current job if downstream fails (optional)
+                            wait: true          // wait for it to finish before continuing
+                        )
                 }
             }
         }

@@ -21,7 +21,7 @@ def build(repo, envConf) {
     // } else if (repo.buildType == "docker") {
     //     buildDocker(repo, envConf, idx)
     } else {
-        error "❌ Unknown repo.buildType '${repo.buildType}' for ${repo.name}"
+        echo "❌ Unknown repo.buildType '${repo.buildType}' for ${repo.name}"
     }
 }
 
@@ -32,7 +32,7 @@ def setupBuild(repo){
     // } else if (repo.buildType == "docker") {
     //     buildDocker(repo, envConf, idx)
     } else {
-        error "❌ Unknown repo.buildType '${repo.buildType}' for ${repo.name}"
+        echo "❌ Unknown repo.buildType '${repo.buildType}' for ${repo.name}"
     }
 }
 

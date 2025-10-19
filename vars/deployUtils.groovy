@@ -4,7 +4,7 @@ def deploy(repo, envConf, vpsInfos) {
     // } else if (repo.type == "docker") {
     //     deployDocker(repo, envConf, vpsInfo)
     } else {
-        error "❌ Unknown repo.type '${repo.type}' for ${repo.folder}"
+        echo "❌ Unknown repo.type '${repo.type}' for ${repo.folder}"
     }
 }
 

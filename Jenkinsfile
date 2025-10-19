@@ -81,6 +81,7 @@ pipeline {
         }
 
 
+
         stage('Verify repo envs') {
             steps {
                 script {
@@ -323,56 +324,25 @@ pipeline {
             }
         }
 
+
         stage('Generate nginx config and deploy SSH') {
             steps {
                 script {
-                    def changedRepos = redisState.getChangedRepos()
-                    def parallelTasks = [:]
+                    def job = env.JOB_NAME ?: "default-job"
+                    def build = env.BUILD_NUMBER ?: "0"
 
-                    if (!params.FORCE_BUILD_ALL && !changedRepos) {
-                        echo "⏭️ Skipping nginx reload, no changes detected"
-                        return
-                    }
-                    
-                    if (params.REMOVE_ALL_NGINX ) {
-                        echo "⏭️ Remove all sites before place new enable sites."
-                        vpsInfos.values().each { vpsConf -> 
-                            sshagent(credentials: [vpsConf.vpsCredId]) {
-                                sh """
-                                    ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
+                    build job: 'xenon-nginx-manager',
+                        parameters: [
+                            string(name: 'PARENT_BUILD', value: "jenkins:${job}:${build}"),
+                            booleanParam(name: 'FORCE_BUILD_ALL', value: params.FORCE_BUILD_ALL),
+                            booleanParam(name: 'REMOVE_ALL_NGINX', value: params.REMOVE_ALL_NGINX),
+                        ]
 
-                                        sudo rm -f /etc/nginx/sites-enabled/*
-                                        
-                                    "
-                                """
-                            }
-                        }
-                    }
-
-                    repos.each { repo ->
-                        repo.envs.each { envConf ->
-                            parallelTasks["nginx-${envConf.name}"] = {
-                                nginxUtils.generate(repo, envConf, vpsInfos )
-                            }
-                        }
-                    }
-
-                    runWithMaxParallel(parallelTasks, 2)  // 👈 cap parallelism
-
-                    vpsInfos.values().each { vpsConf -> 
-                        sshagent(credentials: [vpsConf.vpsCredId]) {
-                            sh """
-                                ssh -o StrictHostKeyChecking=no ${vpsConf.vpsUser}@${vpsConf.vpsHost} "
-
-                                    sudo nginx -t &&
-
-                                    sudo systemctl reload nginx
-                                "
-                            """
-                        }
-                    }
                 }
             }
         }
+
+
+
     }
 }

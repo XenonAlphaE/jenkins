@@ -1,12 +1,18 @@
-// Default expiry in seconds (e.g. 1 day = 86400)
+// =============================
+// redisState.groovy
+// Safe shared Redis state for Jenkins pipelines
+// =============================
+
+// Default expiry in seconds (1 day)
 def defaultTtl() {
     return (env.REDIS_TTL ?: "86400") as Integer
 }
 
+// Execute Redis command via redis-cli
 def redisCmd(String cmd) {
     def host = env.REDIS_HOST ?: "redis"
     def port = env.REDIS_PORT ?: "6379"
-    def pass = ""
+    def pass = env.REDIS_PASS ?: ""
     def authPart = pass ? "-a ${pass}" : ""
 
     return sh(
@@ -15,17 +21,31 @@ def redisCmd(String cmd) {
     ).trim()
 }
 
-def keyPrefix() {
+// ---------------------------
+// 🔑 Namespace Management
+// ---------------------------
+
+// Compute the effective Redis prefix for this pipeline
+def keyPrefix(String sharedNamespace = null) {
     def job = env.JOB_NAME ?: "default-job"
     def build = env.BUILD_NUMBER ?: "0"
+
+    // If a shared namespace is explicitly provided
+    if (sharedNamespace?.trim()) {
+        // Shared prefix but still traceable to the job (optional)
+        return sharedNamespace?.trim()
+    }
+
+    // Default: isolated per job+build
     return "jenkins:${job}:${build}"
 }
 
-def listPush(String key, String value, Integer ttl = defaultTtl()) {
-    def fullKey = "${keyPrefix()}:${key}"
-    // Push value
+// ---------------------------
+// List operations
+// ---------------------------
+def listPush(String key, String value, Integer ttl = defaultTtl(), String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:${key}"
     redisCmd("lpush ${fullKey} '${value}'")
-    // Set expiry if > 0
     if (ttl > 0) {
         redisCmd("expire ${fullKey} ${ttl}")
     }
@@ -33,22 +53,22 @@ def listPush(String key, String value, Integer ttl = defaultTtl()) {
     return true
 }
 
-def listContains(String key, String value) {
-    def fullKey = "${keyPrefix()}:${key}"
+def listContains(String key, String value, String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:${key}"
     def result = redisCmd("lrange ${fullKey} 0 -1 | grep -x '${value}' || true")
     return result ? true : false
 }
 
-def listGet(String key) {
-    def fullKey = "${keyPrefix()}:${key}"
+def listGet(String key, String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:${key}"
     def res = redisCmd("lrange ${fullKey} 0 -1")
     def list = res ? res.split("\n") : []
     echo "[redisState] Current values for ${fullKey} = ${list}"
     return list
 }
 
-def listClear(String key) {
-    def fullKey = "${keyPrefix()}:${key}"
+def listClear(String key, String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:${key}"
     echo "[redisState] Clearing list for ${fullKey}"
     return redisCmd("del ${fullKey}")
 }
@@ -56,42 +76,39 @@ def listClear(String key) {
 // ---------------------------
 // Convenience wrappers
 // ---------------------------
-def addMissingCert(String domain, Integer ttl = defaultTtl()) {
+def addMissingCert(String domain, Integer ttl = defaultTtl(), String sharedNamespace = null) {
     if (domain) {
-        listPush("missingCerts", domain.toLowerCase().trim(), ttl)
+        listPush("missingCerts", domain.toLowerCase().trim(), ttl, sharedNamespace)
     }
 }
 
-def addChangedRepo(String repo, Integer ttl = defaultTtl()) {
+def addChangedRepo(String repo, Integer ttl = defaultTtl(), String sharedNamespace = null) {
     if (repo) {
-        listPush("changedRepos", repo.toLowerCase().trim(), ttl)
+        listPush("changedRepos", repo.toLowerCase().trim(), ttl, sharedNamespace)
     }
 }
 
-def getMissingCerts() {
-    return listGet("missingCerts")
+def getMissingCerts(String sharedNamespace = null) {
+    return listGet("missingCerts", sharedNamespace)
 }
 
-def getChangedRepos() {
-    return listGet("changedRepos")
+def getChangedRepos(String sharedNamespace = null) {
+    return listGet("changedRepos", sharedNamespace)
 }
 
-// ---------------------------
-// Existing API
-// ---------------------------
-def isMissingCert(String domain) {
+def isMissingCert(String domain, String sharedNamespace = null) {
     if (!domain) return false
-    return listContains("missingCerts", domain.toLowerCase().trim())
+    return listContains("missingCerts", domain.toLowerCase().trim(), sharedNamespace)
 }
 
-def isNewCommit(String repo) {
+def isNewCommit(String repo, String sharedNamespace = null) {
     if (!repo) return false
-    return listContains("changedRepos", repo.toLowerCase().trim())
+    return listContains("changedRepos", repo.toLowerCase().trim(), sharedNamespace)
 }
 
-def clearAll() {
-    listClear("missingCerts")
-    listClear("changedRepos")
+def clearAll(String sharedNamespace = null) {
+    listClear("missingCerts", sharedNamespace)
+    listClear("changedRepos", sharedNamespace)
 }
 
 def call() {

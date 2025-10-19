@@ -328,12 +328,12 @@ pipeline {
         stage('Generate nginx config and deploy SSH') {
             steps {
                 script {
-                    def job = env.JOB_NAME ?: "default-job"
+                    def jobName = env.JOB_NAME ?: "default-job"
                     def build = env.BUILD_NUMBER ?: "0"
 
                     build job: 'xenon-nginx-manager',
                         parameters: [
-                            string(name: 'PARENT_BUILD', value: "jenkins:${job}:${build}"),
+                            string(name: 'PARENT_BUILD', value: "jenkins:${jobName}:${build}"),
                             booleanParam(name: 'FORCE_BUILD_ALL', value: params.FORCE_BUILD_ALL),
                             booleanParam(name: 'REMOVE_ALL_NGINX', value: params.REMOVE_ALL_NGINX),
                         ]

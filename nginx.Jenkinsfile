@@ -18,6 +18,8 @@ def runWithMaxParallel(tasks, maxParallel = 3) {
 }
 
 pipeline {
+    agent any
+
     options {
         disableConcurrentBuilds()   // 🚫 no concurrent runs
         buildDiscarder(logRotator(numToKeepStr: '100')) // optional cleanup

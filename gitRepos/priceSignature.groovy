@@ -5,12 +5,14 @@ return [
         folder: 'pricesignature',
         credId: 'id_ed25519_xenonalphae',
         imageName: 'pricesignatureapi',
-        imagePort: 7001,
+        buildType: 'proxy',
+
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
         envs: [
             [ 
                 MAIN_DOMAIN:'https://btcsymbol.net/',
                 MAIN_SITENAME:'btcsymbol',
+                proxyPort: 7001,
 
             ],
             

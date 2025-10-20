@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: wildduck_mongo
+    restart: always
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7
+    container_name: wildduck_redis
+    restart: always
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - "6379:6379"
+
+  wildduck:
+    image: nodemailer/wildduck:latest
+    container_name: wildduck_core
+    depends_on:
+      - mongodb
+      - redis
+    restart: always
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/wildduck
+      - REDIS_HOST=redis
+      - API_AUTH_TOKEN=supersecrettoken
+    ports:
+      - "143:143"     # IMAP
+      - "993:993"     # IMAPS
+      - "8080:8080"   # REST API
+    volumes:
+      - ./data/wildduck:/data
+
+  zonemta:
+    image: nodemailer/zonemta:latest
+    container_name: wildduck_zonemta
+    depends_on:
+      - wildduck
+      - redis
+      - mongodb
+    restart: always
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/zonemta
+      - REDIS_HOST=redis
+    ports:
+      - "2525:2525"
+
+  haraka:
+    image: nodemailer/haraka:latest
+    container_name: wildduck_haraka
+    depends_on:
+      - zonemta
+    restart: always
+    ports:
+      - "25:25"
+
+  webmail:
+    image: nodemailer/wildduck-webmail:latest
+    container_name: wildduck_webmail
+    depends_on:
+      - wildduck
+    restart: always
+    ports:
+      - "8081:8081"

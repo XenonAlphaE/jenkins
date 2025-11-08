@@ -12,7 +12,7 @@ return [
 
             [ 
                 MAIN_DOMAIN:'https://subbd.biz/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
@@ -21,7 +21,7 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdcoin.com/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
@@ -30,7 +30,7 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbd.nl/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
@@ -39,7 +39,7 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdtoken.net/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',

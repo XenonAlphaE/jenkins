@@ -12,7 +12,7 @@ return [
 
             [ 
                 MAIN_DOMAIN:'https://btchyper.nl/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/btchyper/token.svg',
                 MAIN_GTAG:'G-EV4VMQB5HZ',
                 MAIN_SITENAME:'btchyper',

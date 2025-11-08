@@ -10,7 +10,7 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://btcbull.nl/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/btcbull/logo.png',
                 MAIN_GTAG:'G-W3VRRLZ0C5',
                 MAIN_SITENAME:'btcbull',

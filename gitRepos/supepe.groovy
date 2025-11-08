@@ -11,7 +11,7 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://supepe.com/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/supepe/logo-7PppWrxZ.webp',
                 MAIN_GTAG:'G-RKQYQZCCT3',
                 MAIN_SITENAME:'supepe',

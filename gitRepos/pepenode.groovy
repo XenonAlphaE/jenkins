@@ -11,7 +11,7 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://pepenode.nl/',
-                BACKLINKS_URL:'https://flockez.netlify.app/js/backlinks.json',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/pepenode/token.svg',
                 MAIN_GTAG:'G-DT4375LBL3',
                 MAIN_SITENAME:'pepenode',

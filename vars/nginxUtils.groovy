@@ -69,7 +69,7 @@ private def generateNextjs(repo, envConf, vpsInfos) {
 
 private def generateProxy(repo, envConf, vpsInfos) {
     def nginxTemplate = readFile('nginx/https.proxy.conf')
-     
+
     def vpsInfo = vpsInfos[repo.vpsRef]
     dir(repo.folder) {
         def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)

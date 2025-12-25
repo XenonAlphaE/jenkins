@@ -3,7 +3,7 @@ return [
     [
         // url: 'git@github.com:XenonAlphaE/xenon-sale-web.git',
         // branch: 'xenon_supepe',
-        // folder: 'xenon_supepe',
+        folder: 'btcsymbol',
         credId: 'id_ed25519_xenonalphae',
         buildType: 'proxy',
         proxyPort: 7001,

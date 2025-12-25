@@ -168,3 +168,13 @@ sudo grep -R "server_name" /etc/nginx/sites-enabled /etc/nginx/conf.d /etc/nginx
 sudo nginx -T | grep "server_name"
 sudo nginx -T | grep -B2 "server_name" | grep supepe.com
 
+
+
+certbots:
+sudo certbot certificates
+
+sudo certbot delete --cert-name btcsymbol.net
+
+
+ps aux | grep certbot
+sudo kill -9 <PID>

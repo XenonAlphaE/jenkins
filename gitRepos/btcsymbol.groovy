@@ -6,7 +6,7 @@ return [
         // folder: 'xenon_supepe',
         credId: 'id_ed25519_xenonalphae',
         buildType: 'proxy',
-        proxyPort: 3000,
+        proxyPort: 7001,
         vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         envs: [

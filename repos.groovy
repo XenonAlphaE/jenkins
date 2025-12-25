@@ -8,6 +8,7 @@ repos += load "${env.WORKSPACE}/gitRepos/pepenode.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/subbd.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/bull.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/wepe.groovy"
+repos += load "${env.WORKSPACE}/gitRepos/btcsymbol.groovy"
 
 
 return repos.collect { repo ->

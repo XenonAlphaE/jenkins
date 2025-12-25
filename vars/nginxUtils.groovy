@@ -82,9 +82,7 @@ private def generateProxy(repo, envConf, vpsInfos) {
         def tmpConfigFile = "${envConf.name}.conf"
         def nginxConfig = nginxTemplate
             .replace('{{DOMAIN}}', domain)
-            .replace('{{ENV_NAME}}', envConf.name)
-            .replace('{{WEBROOT_BASE}}', vpsInfo.webrootBase)
-            .replace('{{PROXY_PORT}}', envConf.proxyPort)
+            .replace('{{PROXY_PORT}}', repo.proxyPort)
 
         writeFile(file: tmpConfigFile, text: nginxConfig)
         echo "✅ Generated Nginx config for ${envConf.name} locally: ${tmpConfigFile}"

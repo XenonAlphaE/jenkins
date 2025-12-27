@@ -1,8 +1,8 @@
 // repos/maxidoge.groovy
 return [
     [
-        // url: 'git@github.com:XenonAlphaE/xenon-sale-web.git',
-        // branch: 'xenon_supepe',
+        url: 'git@github.com:XenonAlphaE/oracle-price-signature.git',
+        branch: 'master',
         folder: 'btcsymbol',
         credId: 'id_ed25519_xenonalphae',
         buildType: 'proxy',

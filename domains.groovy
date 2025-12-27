@@ -1,4 +1,5 @@
 def repos = []
+repos += load "${env.WORKSPACE}/gitRepos/liquidchain.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/supepe.groovy"
 // repos += load "${env.WORKSPACE}/gitRepos/lilpepe.groovy"
 // repos += load "${env.WORKSPACE}/gitRepos/pepenode.groovy"

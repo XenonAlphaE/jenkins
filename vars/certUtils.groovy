@@ -25,11 +25,11 @@ private def copyCertFromCloudflare(domainInfo, vpsInfos) {
         """
 
         sh """
-            scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.crt ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/ &&
-            scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.key ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/ &&
+            scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.crt ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/ &&
+            scp -o StrictHostKeyChecking=no ${certBasePath}/${domain}/${domain}.key ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/ &&
             ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} '
-                sudo mv /home/${vpsInfo.vpsUser}/${domain}.crt /etc/ssl/cloudflare/${domain}/${domain}.crt &&
-                sudo mv /home/${vpsInfo.vpsUser}/${domain}.key /etc/ssl/cloudflare/${domain}/${domain}.key &&
+                sudo mv /tmp/${domain}.crt /etc/ssl/cloudflare/${domain}/${domain}.crt &&
+                sudo mv /tmp/${domain}.key /etc/ssl/cloudflare/${domain}/${domain}.key &&
                 sudo chmod 600 /etc/ssl/cloudflare/${domain}/${domain}.key &&
                 sudo chmod 600 /etc/ssl/cloudflare/${domain}/${domain}.crt
             '
@@ -88,9 +88,9 @@ private def genrateCertbot(domainInfo, vpsInfos) {
         echo "✅ Generated Nginx config for ${domainInfo.name}: ${tmpConfigFile}"
 
         sh """
-            scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
+            scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/${tmpConfigFile}
             ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
-                sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
+                sudo mv /tmp/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
                 sudo ln -sf /etc/nginx/sites-available/${tmpConfigFile} /etc/nginx/sites-enabled/${tmpConfigFile} &&
                 sudo nginx -t &&
                 sudo systemctl reload nginx

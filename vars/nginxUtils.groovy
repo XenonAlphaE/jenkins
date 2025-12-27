@@ -36,7 +36,7 @@ private def generateNextjs(repo, envConf, vpsInfos) {
         sshagent(credentials: [vpsInfo.vpsCredId]) {
             sh """
                 # Copy config to VPS
-                scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
+                scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/${tmpConfigFile}
 
                 # SSH into VPS and deploy
                 ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
@@ -48,7 +48,7 @@ private def generateNextjs(repo, envConf, vpsInfos) {
                         fi
                     done
 
-                    sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
+                    sudo mv /tmp/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
                     sudo chown root:root /etc/nginx/sites-available/${tmpConfigFile} &&
 
 
@@ -91,7 +91,7 @@ private def generateProxy(repo, envConf, vpsInfos) {
         sshagent(credentials: [vpsInfo.vpsCredId]) {
             sh """
                 # Copy config to VPS
-                scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/home/${vpsInfo.vpsUser}/${tmpConfigFile}
+                scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/${tmpConfigFile}
 
                 # SSH into VPS and deploy
                 ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
@@ -103,7 +103,7 @@ private def generateProxy(repo, envConf, vpsInfos) {
                         fi
                     done
 
-                    sudo mv /home/${vpsInfo.vpsUser}/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
+                    sudo mv /tmp/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
                     sudo chown root:root /etc/nginx/sites-available/${tmpConfigFile} &&
 
 

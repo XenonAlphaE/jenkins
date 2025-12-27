@@ -11,12 +11,12 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://liquidchaintoken.com/',
-                // BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
-                // LOGO_PATH:'/img/supepe/logo-7PppWrxZ.webp',
-                // MAIN_GTAG:'G-RKQYQZCCT3',
-                // MAIN_SITENAME:'supepe',
-                // MAIN_TWITTER:'@supepe',
-                // OG_PATH:'/img/supepe/OG.jpeg'
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
+                LOGO_PATH:'/img/liquidchain/token.png',
+                MAIN_GTAG:'G-12MCW744MW',
+                MAIN_SITENAME:'liquidchain',
+                MAIN_TWITTER:'@liquidchain',
+                OG_PATH:'/img/liquidchain/OG.jpeg'
             ],
         ]
 

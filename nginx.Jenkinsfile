@@ -48,7 +48,7 @@ pipeline {
         stage('Load Script') {
             steps {
                 script {
-                    repos = load 'repos.groovy'
+                    repos = load 'nginx.repos.groovy'
                     vpsInfos = load 'vps.groovy'
 
                 }
@@ -58,13 +58,9 @@ pipeline {
         stage('Generate nginx config and deploy SSH') {
             steps {
                 script {
-                    def changedRepos = redisState.getChangedRepos(params.PARENT_BUILD)
                     def parallelTasks = [:]
 
-                    if (!params.FORCE_BUILD_ALL && !changedRepos) {
-                        echo "⏭️ Skipping nginx reload, no changes detected"
-                        return
-                    }
+                    echo "⏭️ This always generate all domains inner all repos"
                     
                     if (params.REMOVE_ALL_NGINX ) {
                         echo "⏭️ Remove all sites before place new enable sites."

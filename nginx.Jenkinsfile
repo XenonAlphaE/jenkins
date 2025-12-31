@@ -28,11 +28,11 @@ pipeline {
 
 
     parameters {
-        booleanParam(
-            name: 'FORCE_BUILD_ALL',
-            defaultValue: false,
-            description: 'Force build & deploy all repos, even if no new changes'
-        )
+        // booleanParam(
+        //     name: 'FORCE_BUILD_ALL',
+        //     defaultValue: false,
+        //     description: 'Force build & deploy all repos, even if no new changes'
+        // )
         booleanParam(
             name: 'REMOVE_ALL_NGINX',
             defaultValue: false,

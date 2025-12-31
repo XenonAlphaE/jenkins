@@ -73,7 +73,7 @@ pipeline {
         stage('Load Script') {
             steps {
                 script {
-                    repos = load 'repos.groovy'
+                    repos = load 'nextjs.repos.groovy'
                     vpsInfos = load 'vps.groovy'
 
                 }

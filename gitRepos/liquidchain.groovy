@@ -33,22 +33,8 @@ return [
                         targetFile: "eee.conf"
                     ]
                 ]
-
-            ],
+            ]
         ]
 
     ]
 ]
-
-[{
-    sourceFile: 'abc.conf',
-    targetFile: 'aaa.conf'
-},
-{
-    sourceFile: 'abc.conf',
-    targetFile: 'aaa.conf'
-},
-{
-    sourceFile: 'abc.conf',
-    targetFile: 'aaa.conf'
-}]

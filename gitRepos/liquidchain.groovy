@@ -21,16 +21,16 @@ return [
                 OG_PATH:'/img/liquidchain/OG.jpeg',
                 configMaps: [
                     [
-                        sourceFile: 'abc.conf',
-                        targetFile: 'aaa.conf'
+                        sourceFile: "abc.conf",
+                        targetFile: "aaa.conf"
                     ],
                     [
-                        sourceFile: 'bbb.conf',
-                        targetFile: 'ccc.conf'
+                        sourceFile: "bbb.conf",
+                        targetFile: "ccc.conf"
                     ],
                     [
-                        sourceFile: 'ddd.conf',
-                        targetFile: 'eee.conf'
+                        sourceFile: "ddd.conf",
+                        targetFile: "eee.conf"
                     ]
                 ]
 

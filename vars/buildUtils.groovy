@@ -57,8 +57,6 @@ private def installNextjs(repo){
             rm -rf .next/**/*.nft.json || true
             rm -rf buildEnvs
         '''
-
-k
         
         sh """
             mkdir -p ${workspaceDir}/outs
@@ -96,7 +94,7 @@ private def copyBacklinksConfig(repo, envConf) {
 private def buildNextjs(repo, envConf) {
     def configBasePath = "${env.WORKSPACE}/site_configs"
 
-    copyBacklinksConfig(repo, envConf);
+    copyBacklinksConfig(repo, envConf)
 
     dir(repo.folder) {
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)

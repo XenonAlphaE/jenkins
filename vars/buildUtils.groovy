@@ -67,6 +67,8 @@ private def installNextjs(repo){
 }
 
 private def buildNextjs(repo, envConf) {
+    def configBasePath = "${env.WORKSPACE}/site_configs"
+
     dir(repo.folder) {
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
 

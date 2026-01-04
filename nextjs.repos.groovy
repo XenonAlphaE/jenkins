@@ -1,12 +1,12 @@
 
 def repos = []
 repos += load "${env.WORKSPACE}/gitRepos/liquidchain.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/supepe.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/hyper.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/pepenode.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/subbd.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/bull.groovy"
-repos += load "${env.WORKSPACE}/gitRepos/wepe.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/supepe.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/hyper.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/pepenode.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/subbd.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/bull.groovy"
+// repos += load "${env.WORKSPACE}/gitRepos/wepe.groovy"
 
 
 return repos.collect { repo ->
@@ -18,6 +18,7 @@ return repos.collect { repo ->
             .replaceAll(/_+/, '_')            // collapse consecutive underscores
             .toLowerCase()                    // optional: normalize case
 
+        env.KEYWORD_LIST = repo.kwList
         env.name = domain
         return env
     }

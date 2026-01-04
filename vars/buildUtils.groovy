@@ -76,6 +76,12 @@ private def buildNextjs(repo, envConf) {
         def domain    = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
         def envOut    = "${workspaceDir}/outs/${envName}"
         def buildPath = "${workspaceDir}/buildEnvs/${envName}"
+
+        echo "=== keywork list >>>>>  ${envName.KEYWORK_LIST} ==="
+        echo "=== Canonical URL >>>>>  ${envName.CANONICAL_DOMAIN} ==="
+        echo "=== Main URL >>>>>  ${envName.MAIN_DOMAIN} ==="
+
+
         echo "=== Building ${repo.folder} branch >>${repo.branch}<< for env ${envName} ==="
 
         // Check if package.json exists in this folder

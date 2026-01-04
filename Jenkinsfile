@@ -61,6 +61,21 @@ pipeline {
 
 
     stages {
+
+        stage('Verbose metadata') {
+            steps {
+                script {
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+
+                    error "SCM has changed >>>>>>> '${pipelineScmChanged}' "
+                    error "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
+
+                }
+            }
+        }
+
+        
         stage('Clear redis') {
             steps {
                 script {

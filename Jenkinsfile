@@ -35,6 +35,11 @@ pipeline {
             defaultValue: false,
             description: 'Force remove all nginx on build and replace enable sites only'
         )
+        booleanParam(
+            name: 'REFRESH_ALL_NGINX',
+            defaultValue: false,
+            description: 'Force refresh all nginx on build and replace enable sites only'
+        )
         string(
             name: 'MAX_PARALLEL',
             defaultValue: '4',
@@ -327,7 +332,7 @@ pipeline {
 
         stage('Generate nginx config and deploy SSH') {
             when { expression { 
-                return params.FORCE_BUILD_ALL
+                return params.REFRESH_ALL_NGINX
             } }
             steps {
                 script {

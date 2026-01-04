@@ -77,9 +77,9 @@ private def buildNextjs(repo, envConf) {
         def envOut    = "${workspaceDir}/outs/${envName}"
         def buildPath = "${workspaceDir}/buildEnvs/${envName}"
 
-        echo "=== keywork list >>>>>  ${envName.KEYWORK_LIST} ==="
-        echo "=== Canonical URL >>>>>  ${envName.CANONICAL_DOMAIN} ==="
-        echo "=== Main URL >>>>>  ${envName.MAIN_DOMAIN} ==="
+        echo "=== keywork list >>>>>  ${envConf.KEYWORK_LIST} ==="
+        echo "=== Canonical URL >>>>>  ${envConf.CANONICAL_DOMAIN} ==="
+        echo "=== Main URL >>>>>  ${envConf.MAIN_DOMAIN} ==="
 
 
         echo "=== Override configs to repo ==="

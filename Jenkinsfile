@@ -248,8 +248,12 @@ pipeline {
 
             steps {
                 script {
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+
+                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+
                     def changedRepos = redisState.getChangedRepos() as List
-                    def reposToCheck = params.FORCE_BUILD_ALL ? repos : repos.findAll { r -> changedRepos.contains(r.folder) }
+                    def reposToCheck = BUILD_ALL ? repos : repos.findAll { r -> changedRepos.contains(r.folder) }
                     def parallelTasks = [:]
 
                     reposToCheck.each { repo ->

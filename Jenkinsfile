@@ -68,8 +68,8 @@ pipeline {
                     def pipelineScmChanged = currentBuild.changeSets.any { it.items }
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
 
-                    error "SCM has changed >>>>>>> '${pipelineScmChanged}' "
-                    error "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
+                    echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
+                    echo "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
 
                 }
             }

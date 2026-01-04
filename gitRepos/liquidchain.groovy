@@ -21,16 +21,16 @@ return [
                 OG_PATH:'/img/liquidchain/OG.jpeg',
                 configMaps: [
                     [
-                        sourceFile: "abc.conf",
-                        targetFile: "aaa.conf"
+                        sourceFile: "ico.eth.json",
+                        targetFile: "config.eth.main.json"
                     ],
                     [
-                        sourceFile: "bbb.conf",
-                        targetFile: "ccc.conf"
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
                     ],
                     [
-                        sourceFile: "ddd.conf",
-                        targetFile: "eee.conf"
+                        sourceFile: "liquid.site.json",
+                        targetFile: "config.site.json"
                     ]
                 ]
             ]

@@ -82,6 +82,32 @@ private def buildNextjs(repo, envConf) {
         echo "=== Main URL >>>>>  ${envName.MAIN_DOMAIN} ==="
 
 
+        echo "=== Override configs to repo ==="
+        envConf.configMaps.each { conf ->
+            def srcFile = "${configBasePath}/${conf.sourceFile}"
+            def destFile = "${workspaceDir}/app/${conf.targetFile}"
+
+            echo "Copy ${srcFile} -> ${destFile}"
+
+            // 1️⃣ Check source file exists
+            if (!fileExists(srcFile)) {
+                error "❌ Source config file not found: ${srcFile}"
+            }
+
+            // 2️⃣ Ensure target directory exists
+            // sh "mkdir -p ${workspaceDir}/app"
+
+            // 3️⃣ Copy file
+            sh "cp ${srcFile} ${destFile}"
+
+            // 4️⃣ Validate copied file exists
+            if (!fileExists(destFile)) {
+                error "❌ Failed to copy config file to: ${destFile}"
+            }
+
+            echo "✅ Config overridden: ${conf.targetFile}"
+        }
+
         echo "=== Building ${repo.folder} branch >>${repo.branch}<< for env ${envName} ==="
 
         // Check if package.json exists in this folder

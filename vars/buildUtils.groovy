@@ -67,7 +67,7 @@ private def installNextjs(repo){
 private def copyBacklinksConfig(repo, envConf) {
     echo "=== Override backlinks list ==="
 
-    def backlinkPath = "${env.WORKSPACE}/site_configs/baclinks.json"
+    def backlinkPath = "${env.WORKSPACE}/site_configs/backlinks.json"
     // 1️⃣ Check source file exists
     if (!fileExists(backlinkPath)) {
         error "❌ backlinks config file not found: ${backlinkPath}"
@@ -76,7 +76,7 @@ private def copyBacklinksConfig(repo, envConf) {
     dir(repo.folder) {
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
 
-        def destFile = "${workspaceDir}/app/baclinks.json"
+        def destFile = "${workspaceDir}/app/backlinks.json"
         // 3️⃣ Copy file
         sh "cp ${backlinkPath} ${destFile}"
 

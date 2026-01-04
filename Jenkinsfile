@@ -65,7 +65,7 @@ pipeline {
         stage('Verbose metadata') {
             steps {
                 script {
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
 
                     echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
@@ -222,7 +222,7 @@ pipeline {
                     runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
                     
                     def changedRepos = redisState.getChangedRepos() as List
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
 
                     echo "Collected repos = ${changedRepos}"
@@ -239,7 +239,8 @@ pipeline {
             when { expression { 
                 def changedRepos = redisState.getChangedRepos() as List
 
-                def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+
                 def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
 
                 return BUILD_ALL || !changedRepos.isEmpty()
@@ -294,7 +295,8 @@ pipeline {
             steps {
                 script {
 
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
                     
                     def parallelSetups = [:]
@@ -334,7 +336,8 @@ pipeline {
             steps {
                 script {
                     def parallelTasks = [:]
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
 
                     repos.each { repo ->
@@ -358,7 +361,8 @@ pipeline {
 
         stage('Generate nginx configs for all sites') {
             when { expression { 
-                def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+                def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+
 
                 return params.REFRESH_ALL_NGINX || pipelineScmChanged
             } }

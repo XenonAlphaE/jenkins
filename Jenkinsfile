@@ -207,9 +207,10 @@ pipeline {
                     runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
                     
                     def changedRepos = redisState.getChangedRepos() as List
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
 
                     echo "Collected repos = ${changedRepos}"
-                    if (!params.FORCE_BUILD_ALL && changedRepos.isEmpty()) {
+                    if (!params.FORCE_BUILD_ALL && changedRepos.isEmpty() && !pipelineScmChanged) {
                         echo "⏭️ No changes and FORCE_BUILD_ALL not set, stopping pipeline early."
                         return  // exits this stage, and since no later stages run → SUCCESS
                     }
@@ -221,7 +222,9 @@ pipeline {
         stage('Check Certificates') {
             when { expression { 
                 def changedRepos = redisState.getChangedRepos() as List
-                return params.FORCE_BUILD_ALL || !changedRepos.isEmpty() 
+                def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+
+                return params.FORCE_BUILD_ALL || !changedRepos.isEmpty() || pipelineScmChanged
             } }
 
             steps {
@@ -273,11 +276,12 @@ pipeline {
             steps {
                 script {
 
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
                     def parallelSetups = [:]
 
                     repos.each { repo ->
                         parallelSetups["setup-${repo.folder}"] = {
-                            if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
+                            if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder) && !pipelineScmChanged) {
                                 echo "⏭️ Skipping setup for ${repo.folder}, no changes detected"
                                 return
                             }
@@ -292,7 +296,7 @@ pipeline {
                     repos.each { repo ->
                         repo.envs.eachWithIndex { envConf, idx ->
                             parallelBuilds["build-${envConf.name}"] = {
-                                if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
+                                if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder) && !pipelineScmChanged) {
                                     echo "⏭️ Skipping setup for ${repo.folder}, no changes detected"
                                     return
                                 }
@@ -310,9 +314,10 @@ pipeline {
             steps {
                 script {
                     def parallelTasks = [:]
+                    def pipelineScmChanged = currentBuild.changeSets.any { it.items }
 
                     repos.each { repo ->
-                        if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
+                        if (!params.FORCE_BUILD_ALL && !redisState.isNewCommit(repo.folder) && !pipelineScmChanged) {
                             echo "⏭️ Skipping build for ${repo.folder}, no changes detected"
                             return
                         }
@@ -332,7 +337,9 @@ pipeline {
 
         stage('Generate nginx config and deploy SSH') {
             when { expression { 
-                return params.REFRESH_ALL_NGINX
+                def pipelineScmChanged = currentBuild.changeSets.any { it.items }
+
+                return params.REFRESH_ALL_NGINX || pipelineScmChanged
             } }
             steps {
                 script {

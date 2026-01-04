@@ -58,7 +58,7 @@ private def installNextjs(repo){
             rm -rf buildEnvs
         '''
 
-
+k
         
         sh """
             mkdir -p ${workspaceDir}/outs
@@ -66,8 +66,37 @@ private def installNextjs(repo){
     }
 }
 
+private def copyBacklinksConfig(repo, envConf) {
+    echo "=== Override backlinks list ==="
+
+    def backlinkPath = "${env.WORKSPACE}/site_configs/baclinks.json"
+    // 1️⃣ Check source file exists
+    if (!fileExists(backlinkPath)) {
+        error "❌ backlinks config file not found: ${backlinkPath}"
+    }
+
+    dir(repo.folder) {
+        def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
+
+        def destFile = "${workspaceDir}/app/baclinks.json"
+        // 3️⃣ Copy file
+        sh "cp ${backlinkPath} ${destFile}"
+
+        // 4️⃣ Validate copied file exists
+        if (!fileExists(destFile)) {
+            error "❌ Failed to copy config file to: ${destFile}"
+        }
+
+        echo "✅ Config Backlinks: ${destFile}"
+    }
+
+
+}
+
 private def buildNextjs(repo, envConf) {
     def configBasePath = "${env.WORKSPACE}/site_configs"
+
+    copyBacklinksConfig(repo, envConf);
 
     dir(repo.folder) {
         def workspaceDir = pwd()  // absolute path to current dir (safe in Jenkins)
@@ -80,6 +109,7 @@ private def buildNextjs(repo, envConf) {
         echo "=== keywork list >>>>>  ${envConf.KEYWORD_LIST} ==="
         echo "=== Canonical URL >>>>>  ${envConf.CANONICAL_DOMAIN} ==="
         echo "=== Main URL >>>>>  ${envConf.MAIN_DOMAIN} ==="
+
 
 
         echo "=== Override configs to repo ==="
@@ -163,53 +193,6 @@ private def buildNextjs(repo, envConf) {
         }
     }
 }
-            
-            // echo "📦 Building Next.js project: ${repo.folder} for env ${envConf.name}"
-
-            // def domain = commonUtils.extractDomain(envConf.MAIN_DOMAIN)
-
-            // if (!(domain && redisState.isMissingCert(domain))) {
-            
-            //     def envOut   = "${workspaceDir}/outs/${envConf.name}"
-            //     def buildPath = "${workspaceDir}/buildEnvs/${envConf.name}"
-
-            //     sh """
-            //         mkdir -p ${buildPath}
-            //         rsync -a --exclude=node_modules ./ ${buildPath}
-            //         ln -s ${workspaceDir}/shared_modules/node_modules ${buildPath}/node_modules
-            //     """
-
-            //     dir(buildPath){
-            //         withEnv(envConf.collect { k,v -> "${k.toUpperCase()}=${v}" } ) {
-            //             sh '''
-            //                 if [ -f package.json ]; then
-            //                     npx next build && npx next-sitemap
-            //                     rm -rf .next/cache .next/server || true
-            //                     rm -rf .next/**/*.nft.json || true
-            //                 else
-            //                     echo "No package.json found, skipping build."
-            //                 fi
-            //             '''
-
-            //             sh """
-            //                 rm -rf ${envOut} || true
-            //                 cp -r out ${envOut} || echo "⚠️ Warning: 'out' folder missing, copy skipped"
-            //             """
-
-            //             sh """
-            //                 if [ -d ${envOut} ] && [ "\$(ls -A ${envOut})" ]; then
-            //                     echo "✅ Build output exists for ${repo.folder}/${envConf.name}"
-            //                 else
-            //                     echo "❌ ERROR: ${envOut} missing or empty for ${repo.folder}"
-            //                     exit 1
-            //                 fi
-            //             """            
-            //         }
-            //     } 
-            // } else {
-            //     echo "⏭️ Skipping ${envConf.name}, missing cert for ${domain}"
-            // }
-
 
 // Only export `build` helper
 return [ build: this.&build, setupBuild: this.&setupBuild ]

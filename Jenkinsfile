@@ -251,6 +251,11 @@ pipeline {
                     def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
 
                     def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+                    
+                    echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
+
+                    echo "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
+
 
                     def changedRepos = redisState.getChangedRepos() as List
                     def reposToCheck = BUILD_ALL ? repos : repos.findAll { r -> changedRepos.contains(r.folder) }

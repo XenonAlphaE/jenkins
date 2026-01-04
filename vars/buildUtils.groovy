@@ -77,7 +77,7 @@ private def buildNextjs(repo, envConf) {
         def envOut    = "${workspaceDir}/outs/${envName}"
         def buildPath = "${workspaceDir}/buildEnvs/${envName}"
 
-        echo "=== keywork list >>>>>  ${envConf.KEYWORK_LIST} ==="
+        echo "=== keywork list >>>>>  ${envConf.KEYWORD_LIST} ==="
         echo "=== Canonical URL >>>>>  ${envConf.CANONICAL_DOMAIN} ==="
         echo "=== Main URL >>>>>  ${envConf.MAIN_DOMAIN} ==="
 

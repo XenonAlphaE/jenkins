@@ -62,20 +62,6 @@ pipeline {
 
     stages {
 
-        stage('Verbose metadata') {
-            steps {
-                script {
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
-
-                    echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
-                    echo "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
-
-                }
-            }
-        }
-
-        
         stage('Clear redis') {
             steps {
                 script {
@@ -88,6 +74,26 @@ pipeline {
             }
         }
 
+
+        stage('Init metadata') {
+            steps {
+                script {
+                    checkout scm
+
+                    def pipelineScmChanged = 
+                        currentBuild.changeSets.any { it.items?.size() > 0 }
+
+                    def buildAll =
+                        params.FORCE_BUILD_ALL || pipelineScmChanged
+
+                    redisState.setBuildAll(buildAll.toString())
+
+                    echo "BUILD_ALL computed = ${buildAll}"
+                }
+            }
+        }
+
+        
 
 
         stage('Load Script') {
@@ -222,8 +228,7 @@ pipeline {
                     runWithMaxParallel(parallelTasks, params.MAX_PARALLEL.toInteger())  // 👈 cap parallelism
                     
                     def changedRepos = redisState.getChangedRepos() as List
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+                    def BUILD_ALL = redisState.getBuildAll()
 
                     echo "Collected repos = ${changedRepos}"
                     if (!BUILD_ALL && changedRepos.isEmpty()) {
@@ -239,19 +244,15 @@ pipeline {
             when { expression { 
                 def changedRepos = redisState.getChangedRepos() as List
 
-                def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-
-                def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+                def BUILD_ALL = redisState.getBuildAll()
 
                 return BUILD_ALL || !changedRepos.isEmpty()
             } }
 
             steps {
                 script {
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
+                    def BUILD_ALL = redisState.getBuildAll()
 
-                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
-                    
                     echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
 
                     echo "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
@@ -304,9 +305,7 @@ pipeline {
             steps {
                 script {
 
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-
-                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+                    def BUILD_ALL = redisState.getBuildAll()
                     
                     def parallelSetups = [:]
 
@@ -345,9 +344,7 @@ pipeline {
             steps {
                 script {
                     def parallelTasks = [:]
-                    def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-
-                    def BUILD_ALL = params.FORCE_BUILD_ALL || pipelineScmChanged
+                    def BUILD_ALL = redisState.getBuildAll()
 
                     repos.each { repo ->
                         if (!BUILD_ALL && !redisState.isNewCommit(repo.folder)) {
@@ -369,11 +366,8 @@ pipeline {
 
 
         stage('Generate nginx configs for all sites') {
-            when { expression { 
-                def pipelineScmChanged = currentBuild.changeSets.any { it.items?.size() > 0 }
-
-
-                return params.REFRESH_ALL_NGINX || pipelineScmChanged
+            when { expression {
+                return params.REFRESH_ALL_NGINX 
             } }
             steps {
                 script {

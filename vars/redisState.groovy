@@ -73,6 +73,19 @@ def listClear(String key, String sharedNamespace = null) {
     return redisCmd("del ${fullKey}")
 }
 
+def getBuildAll(String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:buildAll"
+    def result = redisCmd("get ${fullKey}")
+
+    if (!result) {
+        echo "[redisState] BUILD_ALL not set for ${fullKey} (default=false)"
+        return false
+    }
+
+    return result.toLowerCase() == "true"
+}
+
+
 // ---------------------------
 // Convenience wrappers
 // ---------------------------
@@ -81,6 +94,20 @@ def addMissingCert(String domain, Integer ttl = defaultTtl(), String sharedNames
         listPush("missingCerts", domain.toLowerCase().trim(), ttl, sharedNamespace)
     }
 }
+
+def setBuildAll(String value, Integer ttl = defaultTtl(), String sharedNamespace = null) {
+    def fullKey = "${keyPrefix(sharedNamespace)}:buildAll"
+    def normalized = value?.toLowerCase() == "true" ? "true" : "false"
+
+    redisCmd("set ${fullKey} ${normalized}")
+    if (ttl > 0) {
+        redisCmd("expire ${fullKey} ${ttl}")
+    }
+
+    echo "[redisState] Set BUILD_ALL=${normalized} for ${fullKey} (ttl=${ttl}s)"
+    return true
+}
+
 
 def addChangedRepo(String repo, Integer ttl = defaultTtl(), String sharedNamespace = null) {
     if (repo) {

@@ -253,8 +253,6 @@ pipeline {
                 script {
                     def BUILD_ALL = redisState.getBuildAll()
 
-                    echo "SCM has changed >>>>>>> '${pipelineScmChanged}' "
-
                     echo "BUILD_ALL will apply >>>>>>> '${BUILD_ALL}' "
 
 

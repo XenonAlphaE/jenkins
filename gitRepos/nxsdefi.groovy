@@ -31,6 +31,29 @@ return [
                         targetFile: "config.site.json"
                     ]
                 ]
+            ],
+            [ 
+                MAIN_DOMAIN:'https://nexusdefi.finance/',
+                CANONICAL_DOMAIN:'https://nexusdefi.finance/',
+                LOGO_PATH:'/img/nxsdefi/token.svg',
+                MAIN_GTAG:'G-XQ7H5FEYQF',
+                MAIN_SITENAME:'NexusDeFi',
+                MAIN_TWITTER:'@NexusDeFi',
+                OG_PATH:'/img/nxsdefi/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "ico.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "nexusdefi.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
             ]
         ]
 

@@ -10,10 +10,10 @@ return [
         kwList: 'NexusDeFi, NexusDeFi Token is the first true operating system for the decentralized economy.',
         envs: [
             [ 
-                MAIN_DOMAIN:'https://NexusDeFi.finance/',
-                CANONICAL_DOMAIN:'https://NexusDeFi.finance/',
+                MAIN_DOMAIN:'https://nxsdefi.com/',
+                CANONICAL_DOMAIN:'https://nxsdefi.com/',
                 LOGO_PATH:'/img/nxsdefi/token.svg',
-                MAIN_GTAG:'',
+                MAIN_GTAG:'G-XQ7H5FEYQF',
                 MAIN_SITENAME:'NexusDeFi',
                 MAIN_TWITTER:'@NexusDeFi',
                 OG_PATH:'/img/nxsdefi/OG.jpeg',

@@ -168,9 +168,8 @@ pipeline {
                     repos.each { repo ->
                         parallelTasks["Pull-${repo.folder}"] = {
                             dir(repo.folder) {
-                                def vpsInfo = vpsInfos[repo.vpsRef]
 
-                                if (!fileExists('.git')) {
+                                if (!fileExists('.git/HEAD')) {
                                     // First time clone
                                     checkout([
                                         $class: 'GitSCM',

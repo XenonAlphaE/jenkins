@@ -168,8 +168,13 @@ pipeline {
                     repos.each { repo ->
                         parallelTasks["Pull-${repo.folder}"] = {
                             dir(repo.folder) {
+                                def hasValidGitRepo = sh(
+                                    script: "git rev-parse HEAD >/dev/null 2>&1",
+                                    returnStatus: true
+                                ) == 0
+                                if (!hasValidGitRepo) {
+                                    sh "rm -rf .git"
 
-                                if (!fileExists('.git/HEAD')) {
                                     // First time clone
                                     checkout([
                                         $class: 'GitSCM',

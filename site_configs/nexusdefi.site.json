@@ -13,8 +13,7 @@
     "previousSoldTokens":0,
     "endSaleTime":"2024-11-21T09:00:00Z",
     "purchaseSignatureEndpoint":"https://btcsymbol.net/",
+    "avatarUrl":"/img/nxsdefi/token.svg"
 
-    "ethCommonConfigUrl":"https://btcsymbol.net/public/js/ico.eth.json",
-    "solanaCommonConfigUrl":"https://btcsymbol.net/public/js/ico.solana.json"
 
 }

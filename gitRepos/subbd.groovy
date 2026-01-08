@@ -17,7 +17,21 @@ return [
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
                 MAIN_TWITTER:'@subbd',
-                OG_PATH:'/img/subbd/OG.jpeg'
+                OG_PATH:'/img/subbd/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "xenon.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "subbd.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdcoin.com/',
@@ -26,7 +40,22 @@ return [
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
                 MAIN_TWITTER:'@subbd',
-                OG_PATH:'/img/subbd/OG.jpeg'
+                OG_PATH:'/img/subbd/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "xenon.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "subbd.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
+
             ],
             [ 
                 MAIN_DOMAIN:'https://subbd.nl/',
@@ -35,7 +64,22 @@ return [
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
                 MAIN_TWITTER:'@subbd',
-                OG_PATH:'/img/subbd/OG.jpeg'
+                OG_PATH:'/img/subbd/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "xenon.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "subbd.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
+
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdtoken.net/',
@@ -44,7 +88,21 @@ return [
                 MAIN_GTAG:'G-LVNYLPX8Y1',
                 MAIN_SITENAME:'subbd',
                 MAIN_TWITTER:'@subbd',
-                OG_PATH:'/img/subbd/OG.jpeg'
+                OG_PATH:'/img/subbd/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "xenon.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "subbd.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
             ],
            
         ]

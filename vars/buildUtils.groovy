@@ -46,21 +46,24 @@ private def installNextjs(repo){
             echo "⏭️ Skipping build for ${repo.folder}, no package.json found."
             return
         }
-
-        sh '''
-            rm -rf shared_modules
-            mkdir -p shared_modules
-            cp package.json package-lock.json shared_modules/
-            export CI=true
-            npm ci --prefix shared_modules
-            rm -rf .next/cache .next/server || true
-            rm -rf .next/**/*.nft.json || true
-            rm -rf buildEnvs
-        '''
-        
-        sh """
-            mkdir -p ${workspaceDir}/outs
-        """
+        withCredentials([
+            string(credentialsId: 'GITHUB_NPM_TOKEN_HEROCOINHUNTER2', variable: 'NODE_AUTH_TOKEN')
+        ]) {
+            sh '''
+                rm -rf shared_modules
+                mkdir -p shared_modules
+                cp package.json package-lock.json shared_modules/
+                export CI=true
+                npm ci --prefix shared_modules
+                rm -rf .next/cache .next/server || true
+                rm -rf .next/**/*.nft.json || true
+                rm -rf buildEnvs
+            '''
+            
+            sh """
+                mkdir -p ${workspaceDir}/outs
+            """
+        }
     }
 }
 

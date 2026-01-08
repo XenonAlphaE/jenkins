@@ -50,9 +50,13 @@ private def installNextjs(repo){
             string(credentialsId: 'GITHUB_NPM_TOKEN_HEROCOINHUNTER2', variable: 'GITHUB_TOKEN')
         ]) {
             sh '''
+                echo "Using GITHUB_TOKEN for npm auth"
+
                 rm -rf shared_modules
                 mkdir -p shared_modules
-                cp package.json package-lock.json shared_modules/
+
+                cp package.json package-lock.json .npmrc shared_modules/
+
                 export CI=true
                 npm ci --prefix shared_modules
                 rm -rf .next/cache .next/server || true

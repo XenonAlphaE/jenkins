@@ -47,7 +47,7 @@ private def installNextjs(repo){
             return
         }
         withCredentials([
-            string(credentialsId: 'GITHUB_NPM_TOKEN_HEROCOINHUNTER2', variable: 'NODE_AUTH_TOKEN')
+            string(credentialsId: 'GITHUB_NPM_TOKEN_HEROCOINHUNTER2', variable: 'GITHUB_TOKEN')
         ]) {
             sh '''
                 rm -rf shared_modules

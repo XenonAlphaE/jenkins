@@ -90,6 +90,9 @@ private def genrateCertbot(domainInfo, vpsInfos) {
         sh """
             scp -o StrictHostKeyChecking=no ${tmpConfigFile} ${vpsInfo.vpsUser}@${vpsInfo.vpsHost}:/tmp/${tmpConfigFile}
             ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
+                cat /tmp/${tmpConfigFile}
+            "
+            ssh -o StrictHostKeyChecking=no ${vpsInfo.vpsUser}@${vpsInfo.vpsHost} "
                 sudo mv /tmp/${tmpConfigFile} /etc/nginx/sites-available/${tmpConfigFile} &&
                 sudo ln -sf /etc/nginx/sites-available/${tmpConfigFile} /etc/nginx/sites-enabled/${tmpConfigFile} &&
                 sudo nginx -t &&

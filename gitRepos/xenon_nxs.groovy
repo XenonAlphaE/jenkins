@@ -5,7 +5,7 @@ return [
         folder: 'xenon_nxsdefi',
         credId: 'id_ed25519_herocoinhunter2',
         buildType: 'nextjs',
-        vpsRef : 'ico_vps',   // 👈 just reference which VPS to use
+        vpsRef : 'xenon_vps2',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         kwList: 'NexusDeFi, NexusDeFi Token is the first true operating system for the decentralized economy.',
         envs: [

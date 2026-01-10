@@ -6,7 +6,7 @@ return [
         folder: 'xenon_liquidchain',
         credId: 'id_ed25519_herocoinhunter2',
         buildType: 'nextjs',
-        vpsRef : 'ico_vps',   // 👈 just reference which VPS to use
+        vpsRef : 'xenon_vps2',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         kwList: 'LIQUIDCHAIN Token, LIQUIDCHAIN Token Presale, LIQUIDCHAIN Token Official Website',
         envs: [

@@ -12,6 +12,8 @@ return [
 
             [ 
                 MAIN_DOMAIN:'https://subbd.biz/',
+                CANONICAL_DOMAIN:'https://subbtoken.net/',
+
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
@@ -35,6 +37,8 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdcoin.com/',
+                CANONICAL_DOMAIN:'https://subbtoken.net/',
+
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
@@ -59,6 +63,8 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbd.nl/',
+                CANONICAL_DOMAIN:'https://subbtoken.net/',
+
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',
@@ -83,6 +89,8 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://subbdtoken.net/',
+                CANONICAL_DOMAIN:'https://subbtoken.net/',
+
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/subbd/token.png',
                 MAIN_GTAG:'G-LVNYLPX8Y1',

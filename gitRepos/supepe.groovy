@@ -6,7 +6,7 @@ return [
         folder: 'xenon_supepe',
         credId: 'id_ed25519_xenonalphae',
         buildType: 'nextjs',
-        vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
+        vpsRef : 'xenon_vps2',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         envs: [
             [ 

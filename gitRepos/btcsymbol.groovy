@@ -7,7 +7,7 @@ return [
         credId: 'id_ed25519_xenonalphae',
         buildType: 'proxy',
         proxyPort: '7001',
-        vpsRef : 'xenon_vps',   // 👈 just reference which VPS to use
+        vpsRef : 'xenon_vps2',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         envs: [
             [ 

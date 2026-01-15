@@ -13,10 +13,17 @@ return [
         webrootBase  : '/var/www/presale'
     ],
 
-    ico_vps: [
-        vpsCredId    : 'ico_vps',
+    // ico_vps: [
+    //     vpsCredId    : 'ico_vps',
+    //     vpsUser      : 'root',
+    //     vpsHost      : '193.57.33.177',
+    //     webrootBase  : '/var/www/presale'
+    // ],
+
+    ico_vps2: [
+        vpsCredId    : 'ico_vps2',
         vpsUser      : 'root',
-        vpsHost      : '193.57.33.177',
+        vpsHost      : '195.35.36.20',
         webrootBase  : '/var/www/presale'
     ],
 ]

@@ -12,7 +12,7 @@ return [
         envs: [
             [ 
                 MAIN_DOMAIN:'https://liquidchainlink.com/',
-                CANONICAL_DOMAIN:'https://liquidchainlink.com/',
+                CANONICAL_DOMAIN:'https://liquidchaincoin.com/',
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/liquidchain/token.png',
                 MAIN_GTAG:'G-12MCW744MW',
@@ -36,7 +36,31 @@ return [
             ],
             [ 
                 MAIN_DOMAIN:'https://lqtychain.com/',
-                CANONICAL_DOMAIN:'https://liquidchainlink.com/',
+                CANONICAL_DOMAIN:'https://liquidchaincoin.com/',
+                BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
+                LOGO_PATH:'/img/liquidchain/token.png',
+                MAIN_GTAG:'G-12MCW744MW',
+                MAIN_SITENAME:'liquidchain',
+                MAIN_TWITTER:'@liquidchain',
+                OG_PATH:'/img/liquidchain/OG.jpeg',
+                configMaps: [
+                    [
+                        sourceFile: "xenon.eth.json",
+                        targetFile: "config.eth.main.json"
+                    ],
+                    [
+                        sourceFile: "ico.solana.json",
+                        targetFile: "config.solana.main.json"
+                    ],
+                    [
+                        sourceFile: "liquid.site.json",
+                        targetFile: "config.site.json"
+                    ]
+                ]
+            ],
+            [ 
+                MAIN_DOMAIN:'https://liquidchaincoin.com/',
+                CANONICAL_DOMAIN:'https://liquidchaincoin.com/',
                 BACKLINKS_URL:'https://btcsymbol.net/public/js/backlinks.json',
                 LOGO_PATH:'/img/liquidchain/token.png',
                 MAIN_GTAG:'G-12MCW744MW',

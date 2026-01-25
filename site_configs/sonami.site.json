@@ -1,0 +1,18 @@
+{
+
+    "targetToken":{
+        "address":"",
+        "decimals":18,
+        "symbol": "SNMI",
+        "tokenPrice":"0.00109"
+    },
+    "lastestUpdated": "2026-01-25T00:00:00Z",
+    "lastestRaise" : 53666.56,
+    "dailyRaise" : 15000,
+    "totalRaise": 2400000,
+
+    "previousSoldTokens":0,
+    "endSaleTime":"2024-11-21T09:00:00Z",
+    "purchaseSignatureEndpoint":"https://btcsymbol.net/",
+    "avatarUrl":"/img/sonami/token.svg"
+}

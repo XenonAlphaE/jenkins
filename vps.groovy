@@ -7,12 +7,12 @@ return [
     //     webrootBase  : '/var/www/presale'
     // ],
     
-    // xenon_vps2: [
-    //     vpsCredId    : 'xenon_vps2',
-    //     vpsUser      : 'root',
-    //     vpsHost      : '104.219.233.183',
-    //     webrootBase  : '/var/www/presale'
-    // ],
+    xenon_vps2: [
+        vpsCredId    : 'xenon_vps2',
+        vpsUser      : 'root',
+        vpsHost      : '104.219.233.183',
+        webrootBase  : '/var/www/presale'
+    ],
 
     // ico_vps: [
     //     vpsCredId    : 'ico_vps',

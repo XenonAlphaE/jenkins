@@ -2,6 +2,7 @@
 def repos = []
 repos += load "${env.WORKSPACE}/gitRepos/btcsymbol.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/nxsdefi.groovy"
+repos += load "${env.WORKSPACE}/gitRepos/ico_pepeto.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/ico_sonami.groovy"
 repos += load "${env.WORKSPACE}/gitRepos/liquidchain.groovy"
 

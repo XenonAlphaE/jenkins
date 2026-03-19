@@ -8,7 +8,7 @@ return [
         buildType: 'web_and_api',
         fePort: '8000',
         apiPort: '8001',
-        vpsRef : 'ico_vps2',   // 👈 just reference which VPS to use
+        vpsRef : 'xenon_vps2',   // 👈 just reference which VPS to use
         ssl : 'cloudflare',
         envs: [
             [ 

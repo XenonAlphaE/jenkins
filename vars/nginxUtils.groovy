@@ -4,7 +4,7 @@ def generate(repo, envConf, vpsInfos) {
     }else if (repo.buildType == "proxy") {
         generateProxy(repo, envConf, vpsInfos)
     }else if (repo.buildType == "web_and_api") {
-        generateProxy(repo, envConf, vpsInfos)
+        generateWebAndApi(repo, envConf, vpsInfos)
     } else {
         error "❌ Unknown repo.type '${repo.type}' for nginx config"
     }

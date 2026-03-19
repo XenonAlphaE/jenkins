@@ -37,4 +37,9 @@ ssh athen@1.2.3.4
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 
-ssh -i xeon_vps2.pem root@104.219.233.183
+ssh -vvv  -i xeon_vps2.pem root@104.219.233.183
+ssh -o IdentitiesOnly=yes -i xeon_vps2.pem root@104.219.233.183
+scp -o IdentitiesOnly=yes \
+    -i /Users/steve/Coding/predictx/compose/proxy/xeon_vps2.pem \
+    -o StrictHostKeyChecking=no \
+    -r /Users/steve/Coding/predictx/webserver root@104.219.233.183:/opt/stakeapp

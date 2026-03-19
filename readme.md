@@ -57,6 +57,7 @@ ssh -i /Users/steve/Coding/Jenkins/keys/Test123.pem ubuntu@165.154.235.205
 ssh -i keys/Test123.pem root@165.154.235.205
 ssh -i keys/xeon_vps1.pem ubuntu@165.154.235.179
 
+ssh -i 10800 keys/xeon_vps1.pem   -N -D  ubuntu@165.154.235.179
 
 
 sudo certbot certonly --webroot -w /var/www/presale/btcswifts -d btcswifts.com -d www.btcswifts.com
@@ -114,7 +115,7 @@ environment:
 
 
 # certbot debug #
-ssh -i keys/xeon_vps1.pem ubuntu@165.154.235.179
+ssh -i keys/xeon_vps2.pem root@104.219.233.183
 
 
 sudo mkdir -p /var/www/presale/supepe_com/.well-known/acme-challenge

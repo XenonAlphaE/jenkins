@@ -1,0 +1,46 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins-sandbox1
+    ports:
+      - "12000:8080"
+      - "12001:50000"
+    networks:
+      - jenkins_net
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+      - DOCKER_BUILDKIT=1
+    depends_on:
+      - dind
+    restart: unless-stopped
+
+  dind:
+    image: docker:24-dind
+    container_name: dind
+    privileged: true
+    networks:
+      - jenkins_net
+    command: >
+      dockerd
+      --host=tcp://0.0.0.0:2375
+      --host=unix:///var/run/docker.sock
+    environment:
+      - DOCKER_TLS_CERTDIR=
+    volumes:
+      - dind_storage:/var/lib/docker
+    expose:
+      - "2375"
+    restart: unless-stopped
+
+networks:
+  jenkins_net:
+    driver: bridge
+
+volumes:
+  jenkins_home:
+    external: true
+  dind_storage:

@@ -1,0 +1,1 @@
+docker compose -p dind-jenkins  -f docker-compose.dind.yml up 

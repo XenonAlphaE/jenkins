@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   dind:
-    image: docker:24-dind
+    image: docker:27-dind
     container_name: dind
     privileged: true
     networks:
@@ -30,7 +30,8 @@ services:
       - --host=tcp://0.0.0.0:2375
       - --host=unix:///var/run/docker.sock
       - --tls=false
-      - --mtu=1400
+      - --mtu=1300      # Keeps the connection stable in Asia/Vietnam
+      - --registry-mirror=https://docker.m.daocloud.io # Faster mirror fallback
     environment:
       - DOCKER_TLS_CERTDIR=
     dns:

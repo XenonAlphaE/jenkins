@@ -24,18 +24,26 @@ services:
     privileged: true
     networks:
       - jenkins_net
-    command: >
-      dockerd
-      --host=tcp://0.0.0.0:2375
-      --host=unix:///var/run/docker.sock
+    # MTU 1400 fixes the 'EOF' error during image pulls in many DinD setups
+    command: 
+      - dockerd
+      - --host=tcp://0.0.0.0:2375
+      - --host=unix:///var/run/docker.sock
+      - --tls=false
+      - --mtu=1400
     environment:
       - DOCKER_TLS_CERTDIR=
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     volumes:
       - dind_storage:/var/lib/docker
-    expose:
-      - "2375"
+    healthcheck:
+      test: ["CMD", "docker", "info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
-
 networks:
   jenkins_net:
     driver: bridge

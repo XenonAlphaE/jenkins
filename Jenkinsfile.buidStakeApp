@@ -14,8 +14,8 @@ pipeline {
           docker info
 
           # Install QEMU for multi-arch
-          docker run --privileged --rm tonistiigi/binfmt --install all
-
+          docker run --privileged --rm ghcr.io/tonistiigi/binfmt --install all
+          
           # Create builder (important)
           docker buildx create --name multiarch --use || true
 

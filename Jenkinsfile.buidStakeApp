@@ -13,10 +13,7 @@ pipeline {
           docker version
           docker info
 
-          # Install QEMU for multi-arch
-          docker run --privileged --rm ghcr.io/tonistiigi/binfmt --install all
-          
-          # Create builder (important)
+          # Create builder
           docker buildx create --name multiarch --use || true
 
           # Bootstrap builder
@@ -24,7 +21,7 @@ pipeline {
         '''
       }
     }
-
+    
     // stage('Login Registry') {
     //     steps {
     //         withCredentials([usernamePassword(

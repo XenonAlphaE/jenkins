@@ -20,7 +20,7 @@ services:
 
   dind:
     image: docker:27-dind
-    container_name: dind
+    container_name: dind1
     privileged: true
     networks:
       - jenkins_net
@@ -45,6 +45,16 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis1
+    ports:
+      - "6379:6379"
+    networks:
+      - jenkins_net
+    restart: unless-stopped
+
 networks:
   jenkins_net:
     driver: bridge
@@ -52,4 +62,4 @@ networks:
 volumes:
   jenkins_home:
     external: true
-  dind_storage:
+  dind_storage: {}   # 👈 volume for DinD Docker cache
